@@ -19,6 +19,9 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /app
 
+# Configure git to use https instead of git protocol to avoid firewall issues
+RUN git config --global url."https://github.com/".insteadOf git://github.com/
+
 # Copy only the requirements file to leverage Docker cache
 COPY requirements.txt .
 
