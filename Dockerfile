@@ -22,4 +22,4 @@ RUN pip install uv && uv pip install --system --no-cache-dir -r requirements.txt
 EXPOSE 8050
 
 # Command to run the application
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8050", "app:server"]
