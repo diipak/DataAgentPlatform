@@ -17,6 +17,9 @@ USER jovyan
 # This will be much faster as most libraries are in the base image
 RUN pip install --no-cache-dir -r requirements.txt
 
+# List installed packages for debugging purposes
+RUN pip list
+
 # Expose the port the app runs on
 EXPOSE 8050
 
