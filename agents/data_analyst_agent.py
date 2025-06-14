@@ -2,7 +2,7 @@
 
 import os
 
-from google.adk.agent import Agent
+from google.adk.agents import Agent
 
 from adk_tools.bigquery_tool import BigQueryTool
 
