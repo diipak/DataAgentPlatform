@@ -34,6 +34,56 @@ This project demonstrates an intelligent data analysis platform that leverages G
 - Google Cloud SDK
 - Google Cloud Project with BigQuery enabled
 
+### Google Cloud Setup Instructions
+
+1. Create Google Cloud Project:
+   - Go to Google Cloud Console: https://console.cloud.google.com/
+   - Click on the project dropdown and select "New Project"
+   - Name your project "DataAgentPlatform"
+   - Click "Create"
+
+2. Enable Required APIs:
+   - In the Google Cloud Console:
+     - Search for and enable these APIs:
+       - BigQuery API
+       - Vertex AI API
+       - Cloud Storage API
+       - Cloud Resource Manager API
+
+3. Create Service Account and Download Credentials:
+   - Go to IAM & Admin → Service Accounts
+   - Click "Create Service Account"
+   - Name it "data-agent-platform-service-account"
+   - Description: "Service account for Data Agent Platform"
+   - Click "Create"
+   - Grant the following roles:
+     - BigQuery Admin
+     - Storage Admin
+     - Vertex AI Admin
+   - Click "Continue"
+   - Click "Create Key"
+   - Select JSON format
+   - Click "Create"
+   - Save the downloaded JSON file as `credentials.json` in your project root directory
+
+4. Set up Environment Variables:
+   - Create a `.env` file in your project root directory with:
+   ```
+   GOOGLE_CLOUD_PROJECT=data-agent-platform
+   ```
+
+5. Set up BigQuery Dataset:
+   - In BigQuery Console:
+     - Create a new dataset named `data_agent_platform`
+     - Set location to your preferred region
+     - Enable partitioning and clustering for cost optimization
+
+6. Verify Setup:
+   - Run this command to verify your credentials:
+   ```bash
+   gcloud auth application-default print-access-token
+   ```
+
 ### Using Docker (Recommended)
 
 1. Clone the repository:
