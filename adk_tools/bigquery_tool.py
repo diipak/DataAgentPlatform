@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional
+import pandas as pd
 from google.cloud import bigquery
 
 class BigQueryTool:
@@ -23,20 +24,14 @@ class BigQueryTool:
                 'table': table_name
             }
     
-    def execute_query(self, query: str) -> Dict:
-        """Execute a BigQuery query."""
+    def execute_query(self, query: str) -> pd.DataFrame:
+        """Execute a BigQuery query and returns a pandas DataFrame."""
         try:
             query_job = self.client.query(query)
-            results = query_job.result()
-            return {
-                'success': True,
-                'results': [dict(row) for row in results]
-            }
+            return query_job.to_dataframe()
         except Exception as e:
-            return {
-                'success': False,
-                'error': str(e)
-            }
+            print(f"Error executing BigQuery query: {e}")
+            raise e
     
     def optimize_query(self, query: str) -> Dict:
         """Analyze and optimize a BigQuery query."""

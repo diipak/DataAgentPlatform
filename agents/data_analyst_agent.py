@@ -1,5 +1,7 @@
 # agents/data_analyst_agent.py
 
+import os
+
 from google.adk.agent import Agent
 
 from adk_tools.bigquery_tool import BigQueryTool
@@ -7,7 +9,10 @@ from adk_tools.bigquery_tool import BigQueryTool
 class DataAnalystAgent(Agent):
     def __init__(self):
         super().__init__()
-        self.bigquery_tool = BigQueryTool()
+        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+        if not project_id:
+            raise ValueError("GOOGLE_CLOUD_PROJECT environment variable not set. Please set it in your .env file.")
+        self.bigquery_tool = BigQueryTool(project_id=project_id)
 
     def process(self, query: str) -> str:
         """
