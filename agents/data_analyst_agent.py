@@ -1,7 +1,7 @@
 # agents/data_analyst_agent.py
 
-from adk.agent import Agent
-from adk.config import Config
+from google.adk.agent import Agent
+from google.adk.config import Config
 from adk_tools.bigquery_tool import BigQueryTool
 
 class DataAnalystAgent(Agent):

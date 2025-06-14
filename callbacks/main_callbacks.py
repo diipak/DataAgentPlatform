@@ -1,7 +1,7 @@
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
 import dash
-from adk.config import Config
+from google.adk.config import Config
 from agents.data_analyst_agent import DataAnalystAgent
 
 def register_callbacks(app):
