@@ -1,32 +1,21 @@
-FROM python:3.10.13-slim-bullseye
+# Use a base image with pre-installed scientific Python packages for faster builds
+FROM jupyter/scipy-notebook:python-3.10
 
-# Set environment variables to prevent interactive prompts
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-
-# Install system dependencies required for building Python packages efficiently
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    gfortran \
-    libopenblas-dev \
-    liblapack-dev \
-    libffi-dev \
-    && rm -rf /var/lib/apt/lists/*
+# The base image runs as jovyan user. Switch to root to copy files and set permissions.
+USER root
 
 # Set working directory
-WORKDIR /app
+WORKDIR /home/jovyan/work
 
+# Copy requirements file and application code, and set ownership to the jovyan user
+COPY --chown=jovyan:users . .
 
-# Copy only the requirements file to leverage Docker cache
-COPY requirements.txt .
+# Switch back to the jovyan user for subsequent commands
+USER jovyan
 
-# Install Python dependencies
+# Install the remaining application-specific dependencies
+# This will be much faster as most libraries are in the base image
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
 
 # Expose the port the app runs on
 EXPOSE 8050
