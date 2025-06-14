@@ -1,12 +1,9 @@
-version: '3.8'
-
 services:
   app:
     build: .
     ports:
       - "8050:8050"
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+    env_file:
+      - .env
     volumes:
-      - .:/app
-    command: python app.py
+      - .:/home/jovyan/work
