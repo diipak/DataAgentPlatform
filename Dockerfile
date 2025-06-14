@@ -3,6 +3,7 @@ FROM python:3.10.13-slim-bullseye
 # Set environment variables to prevent interactive prompts
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV GIT_TERMINAL_PROMPT 0
 
 # Install system dependencies required for building Python packages efficiently
 RUN apt-get update && \
