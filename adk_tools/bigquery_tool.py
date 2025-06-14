@@ -1,61 +1,56 @@
-from typing import Dict, List, Optional
-import pandas as pd
 from google.cloud import bigquery
+import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
 
 class BigQueryTool:
-    """ADK-compatible tool for BigQuery operations."""
-    
+    """A tool for interacting with Google BigQuery."""
+
     def __init__(self, project_id: str):
-        self.client = bigquery.Client(project=project_id)
         self.project_id = project_id
-    
-    def get_schema(self, table_name: str) -> Dict:
-        """Get the schema of a BigQuery table."""
+        self.client = bigquery.Client(project=project_id)
+
+    def get_schema(self, table_id: str) -> dict:
+        """
+        Retrieves the schema of a BigQuery table.
+
+        Args:
+            table_id: The ID of the table in the format 'project.dataset.table'.
+
+        Returns:
+            A dictionary containing the table schema or an error message.
+        """
         try:
-            table = self.client.get_table(table_name)
-            return {
-                'table': table_name,
-                'columns': [field.name for field in table.schema],
-                'types': [field.field_type for field in table.schema]
-            }
+            logger.info(f"Retrieving schema for table: {table_id}")
+            table = self.client.get_table(table_id)
+            schema = [{'name': field.name, 'type': field.field_type} for field in table.schema]
+            logger.info(f"Successfully retrieved schema for table: {table_id}")
+            return {'columns': schema}
         except Exception as e:
-            return {
-                'error': str(e),
-                'table': table_name
-            }
-    
+            logger.error(f"Failed to retrieve schema for {table_id}: {e}")
+            return {'error': str(e)}
+
     def execute_query(self, query: str) -> pd.DataFrame:
-        """Execute a BigQuery query and returns a pandas DataFrame."""
+        """
+        Executes a SQL query on BigQuery and returns the result as a DataFrame.
+
+        Args:
+            query: The SQL query to execute.
+
+        Returns:
+            A pandas DataFrame containing the query results.
+        
+        Raises:
+            Exception: If the query fails to execute.
+        """
         try:
+            logger.info(f"Executing BigQuery query: {query}")
             query_job = self.client.query(query)
-            return query_job.to_dataframe()
+            results = query_job.result()
+            df = results.to_dataframe()
+            logger.info(f"Query returned {len(df)} rows.")
+            return df
         except Exception as e:
-            print(f"Error executing BigQuery query: {e}")
-            raise e
-    
-    def optimize_query(self, query: str) -> Dict:
-        """Analyze and optimize a BigQuery query."""
-        try:
-            # Basic optimization - could be enhanced with more sophisticated analysis
-            optimized_query = query
-            
-            # Add caching hint if appropriate
-            if 'SELECT' in query.upper():
-                optimized_query = f"/*+ OPTIONS(use_cache=true) */ {query}"
-            
-            return {
-                'optimized_query': optimized_query,
-                'estimated_cost': self.estimate_cost(query)
-            }
-        except Exception as e:
-            return {
-                'error': str(e)
-            }
-    
-    def estimate_cost(self, query: str) -> float:
-        """Estimate the cost of a BigQuery query."""
-        try:
-            query_job = self.client.query(query, dry_run=True)
-            return query_job.total_bytes_processed / 1024 / 1024 / 1024  # GB
-        except Exception as e:
-            return 0.0
+            logger.error(f"Error executing BigQuery query: {e}")
+            raise
