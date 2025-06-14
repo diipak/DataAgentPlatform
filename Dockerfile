@@ -12,6 +12,7 @@ RUN apt-get update && \
     libopenblas-dev \
     liblapack-dev \
     libffi-dev \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
