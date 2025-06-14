@@ -27,20 +27,63 @@ This project demonstrates an intelligent data analysis platform that leverages G
 
 ## Setup Instructions
 
-1. Initialize Google Cloud Project:
+### Prerequisites
+
+- Python 3.10 or higher
+- Docker Desktop
+- Google Cloud SDK
+- Google Cloud Project with BigQuery enabled
+
+### Using Docker (Recommended)
+
+1. Clone the repository:
 ```bash
-gcloud projects create data-agent-platform
+git clone https://github.com/diipak/DataAgentPlatform.git
+cd DataAgentPlatform
 ```
 
-2. Enable required APIs:
+2. Create a `credentials.json` file with your Google Cloud credentials:
 ```bash
-gcloud services enable bigquery.googleapis.com
+gcloud auth application-default login
+```
+
+3. Start the application using docker-compose:
+```bash
+docker-compose up --build
+```
+
+The application will be available at http://localhost:8050
+
+### Local Development
+
+1. Clone the repository:
+```bash
+git clone https://github.com/diipak/DataAgentPlatform.git
+cd DataAgentPlatform
+```
+
+2. Create and activate a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+
+4. Create a `credentials.json` file with your Google Cloud credentials:
+```bash
+gcloud auth application-default login
+```
+
+5. Run the application:
+```bash
+python app.py
+```
+
+The application will be available at http://localhost:8050
 
 ## Hackathon Submission
 
