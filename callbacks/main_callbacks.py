@@ -1,7 +1,7 @@
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
 import dash
-from google.adk.config import Config
+
 from agents.data_analyst_agent import DataAnalystAgent
 
 def register_callbacks(app):
@@ -13,11 +13,8 @@ def register_callbacks(app):
     )
     def update_output(n_clicks, value):
         if n_clicks and value:
-            # Initialize ADK Config
-            adk_config = Config()
-
             # Instantiate the DataAnalystAgent
-            analyst_agent = DataAnalystAgent(config=adk_config)
+            analyst_agent = DataAnalystAgent()
 
             # Process the query using the agent
             result_markdown = analyst_agent.process(value)

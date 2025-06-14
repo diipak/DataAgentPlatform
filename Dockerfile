@@ -15,7 +15,7 @@ USER jovyan
 
 # Install the remaining application-specific dependencies
 # This will be much faster as most libraries are in the base image
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install uv && uv pip install --no-cache-dir -r requirements.txt
 
 
 # Expose the port the app runs on

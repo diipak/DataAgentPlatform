@@ -1,12 +1,12 @@
 # agents/data_analyst_agent.py
 
 from google.adk.agent import Agent
-from google.adk.config import Config
+
 from adk_tools.bigquery_tool import BigQueryTool
 
 class DataAnalystAgent(Agent):
-    def __init__(self, config: Config):
-        super().__init__(config)
+    def __init__(self):
+        super().__init__()
         self.bigquery_tool = BigQueryTool()
 
     def process(self, query: str) -> str:
