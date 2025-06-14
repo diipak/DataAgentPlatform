@@ -22,4 +22,5 @@ RUN pip install uv && uv pip install --system --no-cache-dir -r requirements.txt
 EXPOSE 8050
 
 # Command to run the application
-CMD ["python", "app.py"]
+# CMD ["python", "app.py"]
+CMD ["tail", "-f", "/dev/null"]
