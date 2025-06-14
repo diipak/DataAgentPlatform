@@ -27,6 +27,7 @@ app.layout = create_layout()
 
 # Register callbacks
 register_callbacks(app)
+server = app.server
 
 # --- Run the App ---
 if __name__ == '__main__':
