@@ -1,7 +1,10 @@
+import logging
 from google.cloud import bigquery
 from interfaces.database_interface import DatabaseConnectorInterface
 import pandas as pd
 from typing import Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 class BigQueryConnector(DatabaseConnectorInterface):
     """Connector for Google BigQuery."""
@@ -9,6 +12,7 @@ class BigQueryConnector(DatabaseConnectorInterface):
     def __init__(self, project_id: str):
         self.client = None
         self.project_id = project_id
+        self.connect()
     
     def connect(self) -> None:
         """Connect to BigQuery."""
@@ -18,7 +22,18 @@ class BigQueryConnector(DatabaseConnectorInterface):
         except Exception as e:
             logger.error(f"Error connecting to BigQuery: {str(e)}")
             raise
-    
+
+    def list_datasets(self) -> List[str]:
+        """Lists all datasets in the project."""
+        try:
+            datasets = self.client.list_datasets()
+            dataset_ids = [dataset.dataset_id for dataset in datasets]
+            logger.info(f"Successfully listed datasets: {dataset_ids}")
+            return dataset_ids
+        except Exception as e:
+            logger.error(f"Error listing datasets: {str(e)}")
+            return []
+
     def execute_query(self, query: str) -> pd.DataFrame:
         """Execute a SQL query and return results as DataFrame."""
         try:
@@ -28,20 +43,30 @@ class BigQueryConnector(DatabaseConnectorInterface):
         except Exception as e:
             logger.error(f"Error executing query: {str(e)}")
             raise
-    
-    def get_table_info(self) -> Dict[str, List[str]]:
-        """Get information about tables in the dataset."""
+
+    def list_tables(self, dataset_id: str) -> List[str]:
+        """Lists all tables in a given dataset."""
         try:
-            tables = self.client.list_tables()
-            table_info = {}
-            for table in tables:
-                schema = self.client.get_table(table).schema
-                table_info[table.table_id] = [field.name for field in schema]
-            return table_info
+            tables = self.client.list_tables(dataset_id)
+            table_ids = [table.table_id for table in tables]
+            logger.info(f"Successfully listed tables in dataset {dataset_id}: {table_ids}")
+            return table_ids
         except Exception as e:
-            logger.error(f"Error getting table info: {str(e)}")
-            raise
-    
+            logger.error(f"Error listing tables in dataset {dataset_id}: {str(e)}")
+            return []
+
+    def get_table_schema(self, dataset_id: str, table_id: str) -> Optional[Dict[str, List[Dict[str, str]]]]:
+        """Retrieves the schema for a specific table."""
+        try:
+            table_ref = f"{self.project_id}.{dataset_id}.{table_id}"
+            table = self.client.get_table(table_ref)
+            schema_list = [{'name': field.name, 'type': field.field_type} for field in table.schema]
+            logger.info(f"Successfully retrieved schema for table {table_ref}")
+            return {'columns': schema_list}
+        except Exception as e:
+            logger.error(f"Error getting schema for table {table_ref}: {str(e)}")
+            return None
+
     def get_row_counts(self) -> Dict[str, int]:
         """Get the number of rows in each table."""
         try:
