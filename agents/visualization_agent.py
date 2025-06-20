@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 class VisualizationAgent(Agent):
     """Agent responsible for generating visualizations and insights from data."""
 
-    def __init__(self):
-        super().__init__()
-        logger.info("VisualizationAgent initialized.")
+    def __init__(self, name: Optional[str] = "VisualizationAgent"): # Add name parameter
+        super().__init__(name=name, description="Agent responsible for generating visualizations and insights from data.") # Pass name and description
+        logger.info(f"{name} (VisualizationAgent) initialized.")
+        # ... rest of __init__ if any
 
     def generate_visualizations(self, data_df: pd.DataFrame, query: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -33,6 +34,7 @@ class VisualizationAgent(Agent):
 
         if data_df.empty:
             insights_text = "The dataset is empty, no visualizations can be generated."
+            logger.info(f"{self.name}: Dataset is empty, no visualizations generated.")
             return {"charts": charts_json, "insights_text": insights_text}
 
         # Attempt to generate some common chart types
@@ -52,25 +54,25 @@ class VisualizationAgent(Agent):
                 try:
                     x_col_bar = categorical_cols[0]
                     y_col_bar = numeric_cols[0]
-                    logger.info(f"Attempting to generate a bar chart with x='{x_col_bar}', y='{y_col_bar}'.")
+                    logger.info(f"{self.name}: Attempting to generate a bar chart with x='{x_col_bar}', y='{y_col_bar}'.")
                     fig_bar = px.bar(data_df.head(20), x=x_col_bar, y=y_col_bar,
                                      title=f"Bar Chart: {y_col_bar} by {x_col_bar} (Top 20 rows)")
                     charts_json.append(pio.to_json(fig_bar))
                     insights_text += f"Generated a bar chart showing '{y_col_bar}' by '{x_col_bar}'.\n"
                 except Exception as e:
-                    logger.warning(f"Could not generate bar chart: {e}")
+                    logger.warning(f"{self.name}: Could not generate bar chart: {e}")
                     insights_text += f"Could not generate a default bar chart: {e}\n"
 
             # 2. Try a Histogram for the first numeric column
             if numeric_cols:
                 try:
                     hist_col = numeric_cols[0]
-                    logger.info(f"Attempting to generate a histogram for '{hist_col}'.")
+                    logger.info(f"{self.name}: Attempting to generate a histogram for '{hist_col}'.")
                     fig_hist = px.histogram(data_df, x=hist_col, title=f"Histogram for {hist_col}")
                     charts_json.append(pio.to_json(fig_hist))
                     insights_text += f"Generated a histogram for '{hist_col}'.\n"
                 except Exception as e:
-                    logger.warning(f"Could not generate histogram: {e}")
+                    logger.warning(f"{self.name}: Could not generate histogram: {e}")
                     insights_text += f"Could not generate a default histogram: {e}\n"
 
             # 3. Try a Scatter Plot if at least two numeric columns exist
@@ -78,7 +80,7 @@ class VisualizationAgent(Agent):
                 try:
                     x_col_scatter = numeric_cols[0]
                     y_col_scatter = numeric_cols[1]
-                    logger.info(f"Attempting to generate a scatter plot with x='{x_col_scatter}', y='{y_col_scatter}'.")
+                    logger.info(f"{self.name}: Attempting to generate a scatter plot with x='{x_col_scatter}', y='{y_col_scatter}'.")
                     # Use a sample for potentially large datasets in scatter plots
                     sample_df = data_df.sample(n=min(1000, len(data_df)))
                     fig_scatter = px.scatter(sample_df, x=x_col_scatter, y=y_col_scatter,
@@ -86,18 +88,20 @@ class VisualizationAgent(Agent):
                     charts_json.append(pio.to_json(fig_scatter))
                     insights_text += f"Generated a scatter plot for '{y_col_scatter}' vs '{x_col_scatter}'.\n"
                 except Exception as e:
-                    logger.warning(f"Could not generate scatter plot: {e}")
+                    logger.warning(f"{self.name}: Could not generate scatter plot: {e}")
                     insights_text += f"Could not generate a default scatter plot: {e}\n"
 
             if not charts_json:
                 insights_text += "Could not automatically determine suitable chart types for the given data."
+                logger.info(f"{self.name}: Could not automatically determine suitable chart types.")
 
         except Exception as e:
-            logger.error(f"Error during visualization generation: {e}")
+            logger.error(f"Error during visualization generation in {self.name}: {e}", exc_info=True)
             insights_text += f"An error occurred during visualization: {e}"
             # Fallback or ensure partial results are returned
             return {"charts": charts_json, "insights_text": insights_text}
 
+        logger.info(f"{self.name}: Successfully generated visualizations and insights.")
         return {"charts": charts_json, "insights_text": insights_text}
 
 # Example Usage (optional, for testing)

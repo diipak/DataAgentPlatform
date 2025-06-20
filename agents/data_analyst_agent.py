@@ -5,52 +5,52 @@ import logging # Added import
 
 from google.adk.agents import Agent
 from vertexai.generative_models import GenerativeModel
+from typing import Dict, Any, Optional # Ensure Optional is imported
 
 from adk_tools.bigquery_tool import BigQueryTool
-from connectors.bigquery_connector import BigQueryConnector # Added import
-from agents.schema_agent import SchemaAgent # Added import
+from connectors.bigquery_connector import BigQueryConnector
+from agents.schema_agent import SchemaAgent
 
-logger = logging.getLogger(__name__) # Added logger initialization
+logger = logging.getLogger(__name__)
 
 class DataAnalystAgent(Agent):
-    def __init__(self):
-        super().__init__()
-        logger.info("Initializing DataAnalystAgent...")
-        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    def __init__(self, project_id: Optional[str] = None, name: Optional[str] = "DataAnalystAgent"): # Add name parameter
+        super().__init__(name=name, description="Agent for natural language to SQL conversion and data analysis.") # Pass name and description
+        logger.info(f"Initializing {name}...")
+
+        if project_id is None:
+            project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+
         if not project_id:
-            logger.error("GOOGLE_CLOUD_PROJECT environment variable not set.")
-            raise ValueError("GOOGLE_CLOUD_PROJECT environment variable not set. Please set it in your .env file or equivalent.")
+            logger.error(f"{name}: GOOGLE_CLOUD_PROJECT environment variable not set and no project_id provided.")
+            raise ValueError(f"{name}: GOOGLE_CLOUD_PROJECT environment variable not set and no project_id provided.")
+
+        self.project_id = project_id
+        try:
+            self.connector = BigQueryConnector(project_id=self.project_id) # Connector for the tool
+            self.bigquery_tool = BigQueryTool(connector=self.connector)
+            logger.info(f"{name} initialized BigQueryTool with project_id: {self.project_id}")
+        except Exception as e:
+            logger.error(f"Error initializing BigQueryConnector or BigQueryTool in {name}: {e}")
+            self.connector = None
+            self.bigquery_tool = None # Ensure tool is also None if connector fails
 
         try:
-            logger.info(f"Attempting to initialize BigQueryConnector with project_id: {project_id}")
-            self.connector = BigQueryConnector(project_id=project_id)
-            logger.info("BigQueryConnector initialized successfully.")
+            self.schema_agent = SchemaAgent(project_id=self.project_id, name="DataAnalystInternalSchemaAgent")
+            logger.info(f"{name} successfully initialized internal SchemaAgent.")
         except Exception as e:
-            logger.error(f"Failed to initialize BigQueryConnector: {e}")
-            raise  # Or handle more gracefully depending on requirements
-
-        try:
-            logger.info(f"Attempting to initialize SchemaAgent with project_id: {project_id}")
-            self.schema_agent = SchemaAgent(project_id=project_id) # Initialize SchemaAgent
-            logger.info("SchemaAgent initialized successfully.")
-        except Exception as e:
-            logger.error(f"Failed to initialize SchemaAgent: {e}")
-            # Decide if this is critical or if the agent can operate without it
-            # For now, let's make it non-critical for basic query processing if target_table is fixed
-            self.schema_agent = None # Or raise e if SchemaAgent is essential
-
-        logger.info("Initializing BigQueryTool with the connector.")
-        self.bigquery_tool = BigQueryTool(connector=self.connector) # Pass connector instance
+            logger.error(f"Error initializing internal SchemaAgent in {name}: {e}")
+            self.schema_agent = None
 
         self.model = GenerativeModel("gemini-1.0-pro")
-        logger.info("DataAnalystAgent initialized.")
+        logger.info(f"{name} (DataAnalystAgent) initialized successfully.")
 
     def process(self, query: str, dataset_schema: dict, project_id: str, dataset_id: str) -> dict:
         """
         Processes a natural language query, converts it to a SQL query using the provided dataset schema,
         executes it, and returns the results along with the SQL query.
         """
-        logger.info(f"Processing query: '{query}' for dataset: {project_id}.{dataset_id}")
+        logger.info(f"{self.name}: Processing query: '{query}' for dataset: {project_id}.{dataset_id}")
 
         return_value = {
             'sql_query': None,

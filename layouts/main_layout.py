@@ -4,11 +4,10 @@ import dash_bootstrap_components as dbc
 
 def create_layout():
     return dbc.Container([
+        dcc.Store(id='store-generated-sql'), # Added dcc.Store here
         # Header
         dbc.Row([
-            dbc.Col([
-                html.H1("Dynamic Data Agent Platform", className="text-center mb-4")
-            ], width=12)
+            dbc.Col(html.H1("Dynamic Data Agent Platform", className="text-center mb-4"), width=12)
         ]),
 
         # Global Error Alert Row
@@ -18,91 +17,87 @@ def create_layout():
                     id="global-error-alert",
                     is_open=False,
                     dismissable=True,
-                    duration=4000, # Optional: auto-dismiss after 4 seconds
+                    duration=4000,
                     color="danger"
                 ),
-                width=12 # Spans full width for visibility
+                width=12
             )
-        ], className="mb-3"), # Add some margin below the alert
+        ], className="mb-3"),
 
-        # Dataset Selection Row
+        # Main Content Row
         dbc.Row([
+            # Left Panel - Dataset Selection & Query Input
             dbc.Col([
                 dbc.Card([
-                    dbc.CardHeader("Dataset Selection"),
+                    dbc.CardHeader("Dataset & Query Input"), # Combined Header
                     dbc.CardBody([
                         html.Label("Select BigQuery Dataset:"),
                         dcc.Dropdown(
                             id='dataset-dropdown',
                             placeholder="Load datasets first...",
-                            # Options will be populated by a callback
                         ),
-                        dbc.Button("Load/Refresh Datasets", id="load-datasets-button", color="info", className="mt-2"),
+                        dbc.Button("Load/Refresh Datasets", id="load-datasets-button", color="info", className="mt-2 mb-3"), # Added mb-3 for spacing
                         dcc.Loading(
-                            id="loading-datasets", # For feedback while loading datasets
+                            id="loading-datasets",
                             type="default",
                             children=html.Div(id="dataset-load-status")
-                        )
-                        # Maybe a Div to show selected dataset details later: html.Div(id='selected-dataset-details')
-                    ])
-                ])
-            ], width=12) # Or adjust width as needed
-        ], className="mb-3"), # Add some margin
-        
-        # Main Content Row (Query Input & Results)
-        dbc.Row([
-            # Left Panel - Query Input
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardHeader("Query Input"),
-                    dbc.CardBody([
+                        ),
+                        html.Hr(), # Separator
+                        html.Label("Enter your natural language query:"), # Clarifying label
                         dbc.Textarea(
                             id="query-input",
-                            placeholder="Enter your natural language query here...",
+                            placeholder="e.g., 'What are the most common words in Shakespeare's works?'",
                             className="mb-3",
-                            style={"height": "200px"}
+                            style={"height": "150px"} # Adjusted height
                         ),
-                        dbc.Button("Submit Query", id="submit-button", color="primary", className="me-1"), # Renamed
-                        dbc.Button("Clear", id="clear-button", color="secondary") # Renamed
+                        dbc.Button("Submit Query", id="submit-button", color="primary", className="me-1"),
+                        dbc.Button("Clear", id="clear-button", color="secondary")
                     ])
                 ])
             ], width=4),
             
-            # Right Panel - Results
+            # Right Panel - Query Results & Visualizations
             dbc.Col([
                 dbc.Card([
-                    dbc.CardHeader("Query Results & Visualizations"), # Updated Header
+                    dbc.CardHeader("Query Results"), # Original Header
                     dbc.CardBody([
                         dcc.Loading(
                             id="loading-results",
+                            type="default", # Ensure type is set
                             children=[
-                                html.H5("SQL Query:"),
-                                dcc.Markdown(id="sql-query-display"), # To show the generated SQL
-                                html.H5("Results Table:"),
-                                html.Div(id="query-results-table"), # Renamed for the markdown table
+                                html.H5("Generated SQL Query:"), # More descriptive
+                                dcc.Markdown(id="sql-query-display"),
+                                html.Div([ # Wrapper for feedback elements
+                                    dbc.Button(html.I(className="fas fa-thumbs-up"), id="sql-feedback-up-button", color="success", size="sm", className="me-1"),
+                                    dbc.Button(html.I(className="fas fa-thumbs-down"), id="sql-feedback-down-button", color="danger", size="sm"),
+                                    html.Div(id="sql-feedback-status", className="ms-2 d-inline-block", style={'fontSize': '0.9em'}) # For "Thanks" message
+                                ], className="mt-2 mb-2"), # Add some margin
+                                html.Hr(), # Separator before results table
+                                html.H5("Query Results Data:"), # More descriptive
+                                html.Div(id="query-results-table"),
+                                html.Hr(), # Separator
                                 html.H5("Visualizations:"),
-                                html.Div(id="charts-display-area") # For dcc.Graph components
-                            ],
-                            type="default"
+                                html.Div(id="charts-display-area")
+                            ]
                         )
                     ])
                 ])
             ], width=8)
         ]),
         
-        # Insights Panel (already exists, should be fine)
+        # Insights Panel
         dbc.Row([
             dbc.Col([
                 dbc.Card([
-                    dbc.CardHeader("Insights"), # This is for textual insights from VisualizationAgent
+                    dbc.CardHeader("Insights"),
                     dbc.CardBody([
-                        dcc.Loading( # Added loading for insights
+                        dcc.Loading(
                             id="loading-insights",
                             type="default",
-                            children=[html.Div(id="insights-display-area")] # Renamed id for clarity
+                            children=[html.Div(id="insights-display-area")]
                         )
                     ])
                 ])
             ], width=12)
-        ], className="mt-3") # Added margin top for spacing
+        ], className="mt-3")
     ], fluid=True)
