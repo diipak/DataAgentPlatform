@@ -4,6 +4,12 @@ from interfaces.database_interface import DatabaseConnectorInterface
 import pandas as pd
 from typing import Dict, List, Optional
 
+# Import db_dtypes to ensure BigQuery can handle special data types
+try:
+    import db_dtypes
+except ImportError:
+    logging.warning("db_dtypes package not found. Some BigQuery data types may not work correctly.")
+
 logger = logging.getLogger(__name__)
 
 class BigQueryConnector(DatabaseConnectorInterface):

@@ -168,7 +168,7 @@ I can handle basic queries like 'show first 10 rows', 'count records', or 'show 
             # Clean up the response to get only the SQL query
             cleaned_text = response.text.strip()
             # Remove markdown code blocks
-            cleaned_text = cleaned_text.replace("```sql", "").replace("```", "").replace("`", "")
+            cleaned_text = cleaned_text.replace("```sql", "").replace("```", "")
 
             # Sometimes the model prefixes with 'bigquery' or 'sql', so we remove it case-insensitively
             if cleaned_text.lower().lstrip().startswith('bigquery'):
@@ -177,7 +177,19 @@ I can handle basic queries like 'show first 10 rows', 'count records', or 'show 
                 if select_pos != -1:
                     cleaned_text = cleaned_text[select_pos:]
             
-            sql_query = cleaned_text
+            # Remove extra whitespace and ensure proper formatting
+            sql_query = ' '.join(cleaned_text.split())
+            
+            # Validate the query starts with a valid SQL keyword
+            valid_starts = ['SELECT', 'WITH', 'CREATE', 'INSERT', 'UPDATE', 'DELETE']
+            if not any(sql_query.upper().startswith(start) for start in valid_starts):
+                # Try to extract SQL from the response
+                lines = cleaned_text.split('\n')
+                for line in lines:
+                    line = line.strip()
+                    if any(line.upper().startswith(start) for start in valid_starts):
+                        sql_query = line
+                        break
             logger.info(f"Generated SQL query: {sql_query}")
             return_value['sql_query'] = sql_query
         except Exception as e:
@@ -215,8 +227,8 @@ I can handle basic queries like 'show first 10 rows', 'count records', or 'show 
         
         # Extract table name from dataset_id (it might be dataset.table format)
         if '.' in dataset_id:
-            _, table_name = dataset_id.split('.', 1)
-            full_table_ref = f"`{project_id}.{dataset_id}`"
+            dataset_name, table_name = dataset_id.split('.', 1)
+            full_table_ref = f"`{project_id}.{dataset_name}.{table_name}`"
         else:
             # If no table specified, try to get first table from schema
             if schema_parts:
@@ -237,7 +249,16 @@ I can handle basic queries like 'show first 10 rows', 'count records', or 'show 
             return f"SELECT COUNT(*) as total_records FROM {full_table_ref}"
         
         elif any(phrase in query_lower for phrase in ["what columns", "show columns", "column names"]):
-            return f"SELECT column_name FROM `{project_id}.{dataset_id}`.INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}'"
+            # For column info, we need the dataset and table name separately
+            if '.' in dataset_id:
+                dataset_name, table_name = dataset_id.split('.', 1) 
+            else:
+                dataset_name = dataset_id
+                if schema_parts and "Table:" in schema_parts[0]:
+                    table_name = schema_parts[0].split("Table:")[1].split(",")[0].strip()
+                else:
+                    return None
+            return f"SELECT column_name, data_type FROM `{project_id}.{dataset_name}`.INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}'"
         
         elif any(phrase in query_lower for phrase in ["summary", "describe", "overview"]):
             return f"SELECT * FROM {full_table_ref} LIMIT 5"
