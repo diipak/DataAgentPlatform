@@ -30,7 +30,7 @@ def create_layout():
                 html.Div(className="chat-messages-container", children=[
                     # Welcome message
                     html.Div(className="welcome-message", children=[
-                        "🚀 Welcome to the AI-Powered Data Agent Platform! I'm your intelligent data analyst assistant. I can help you explore, analyze, and gain insights from your agricultural data using advanced AI and natural language processing. Try the suggested questions below or ask me anything!"
+                        "🚀 Welcome to the AI-Powered Data Agent Platform! I'm your intelligent data analyst assistant. I can help you explore, analyze, and gain insights from your data using advanced AI and natural language processing. Try the suggested questions below or ask me anything!"
                     ]),
                     
                     # Chat messages will be added here dynamically
@@ -41,14 +41,10 @@ def create_layout():
                 html.Div(className="suggestions-container", children=[
                     html.P("🧠 Intelligent Analytics Questions:", className="suggestions-title"),
                     html.Div(className="suggestion-buttons", children=[
-                        dbc.Button("📊 Analyze rice production trends over time", 
-                                 id="suggestion-1", className="suggestion-btn", color="outline-light", size="sm"),
-                        dbc.Button("🌾 Compare wheat vs rice yield efficiency", 
-                                 id="suggestion-2", className="suggestion-btn", color="outline-light", size="sm"),
-                        dbc.Button("📈 Which states have highest crop productivity?", 
-                                 id="suggestion-3", className="suggestion-btn", color="outline-light", size="sm"),
-                        dbc.Button("🔍 Find correlations in agricultural data", 
-                                 id="suggestion-4", className="suggestion-btn", color="outline-light", size="sm"),
+                        dbc.Button("📊 Show me the main trends", id='suggestion-1', color="secondary", className="suggestion-btn"),
+                        dbc.Button("📈 What are the key metrics?", id='suggestion-2', color="secondary", className="suggestion-btn"),
+                        dbc.Button("🌍 Summarize the dataset for me", id='suggestion-3', color="secondary", className="suggestion-btn"),
+                        dbc.Button("🔍 Find interesting correlations", id='suggestion-4', color="secondary", className="suggestion-btn"),
                     ])
                 ]),
                 

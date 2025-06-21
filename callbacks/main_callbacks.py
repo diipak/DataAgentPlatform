@@ -256,13 +256,13 @@ def register_callbacks(app):
         # Determine the message based on trigger
         message = ""
         if trigger_id == 'suggestion-1':
-            message = "Analyze rice production trends over time"
+            message = "📊 Show me the main trends"
         elif trigger_id == 'suggestion-2':
-            message = "Compare wheat vs rice yield efficiency"
+            message = "📈 What are the key metrics?"
         elif trigger_id == 'suggestion-3':
-            message = "Which states have highest crop productivity?"
+            message = "🌍 Summarize the dataset for me"
         elif trigger_id == 'suggestion-4':
-            message = "Find correlations in agricultural data"
+            message = "🔍 Find interesting correlations"
         elif trigger_id in ['send-button', 'chat-input']:
             message = input_value
         
@@ -640,13 +640,13 @@ The visualization and detailed insights are shown on the right panel. Feel free 
         # Determine the message based on trigger
         message = ""
         if trigger_id == 'suggestion-1':
-            message = "Analyze rice production trends over time"
+            message = "📊 Show me the main trends"
         elif trigger_id == 'suggestion-2':
-            message = "Compare wheat vs rice yield efficiency"
+            message = "📈 What are the key metrics?"
         elif trigger_id == 'suggestion-3':
-            message = "Which states have highest crop productivity?"
+            message = "🌍 Summarize the dataset for me"
         elif trigger_id == 'suggestion-4':
-            message = "Find correlations in agricultural data"
+            message = "🔍 Find interesting correlations"
         elif trigger_id in ['send-button', 'chat-input']:
             message = input_value
         
