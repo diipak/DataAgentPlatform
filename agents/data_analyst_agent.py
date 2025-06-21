@@ -2,6 +2,7 @@
 
 import os
 import logging # Added import
+import vertexai
 
 from google.adk.agents import Agent
 from vertexai.generative_models import GenerativeModel
@@ -27,6 +28,13 @@ class DataAnalystAgent(Agent):
 
         # Store project_id in a way that works with ADK Agent
         self._project_id = project_id
+        
+        # Initialize Vertex AI
+        try:
+            vertexai.init(project=self._project_id, location="europe-west4")
+            logger.info(f"{name} initialized Vertex AI successfully.")
+        except Exception as e:
+            logger.error(f"Error initializing Vertex AI in {name}: {e}")
         try:
             self._connector = BigQueryConnector(project_id=self._project_id) # Connector for the tool
             self._bigquery_tool = BigQueryTool(connector=self._connector)
@@ -43,7 +51,28 @@ class DataAnalystAgent(Agent):
             logger.error(f"Error initializing internal SchemaAgent in {name}: {e}")
             self._schema_agent = None
 
-        self.model = GenerativeModel("gemini-1.0-pro")
+        try:
+            self.model = GenerativeModel("gemini-2.5-flash")
+            logger.info(f"{name} initialized Gemini model successfully.")
+        except Exception as e:
+            logger.warning(f"Error initializing Gemini model in {name}: {e}")
+            # Try fallback models
+            fallback_models = ["gemini-2.5-flash", "gemini-2.5-pro", "text-bison@001"]
+            model_initialized = False
+            
+            for fallback_model in fallback_models:
+                try:
+                    self.model = GenerativeModel(fallback_model)
+                    logger.info(f"{name} initialized fallback model {fallback_model} successfully.")
+                    model_initialized = True
+                    break
+                except Exception as fallback_error:
+                    logger.warning(f"Error initializing fallback model {fallback_model} in {name}: {fallback_error}")
+            
+            if not model_initialized:
+                logger.error(f"All model initialization attempts failed in {name}. Vertex AI may not be enabled.")
+                self.model = None
+        
         logger.info(f"{name} (DataAnalystAgent) initialized successfully.")
 
     @property
@@ -113,11 +142,42 @@ class DataAnalystAgent(Agent):
         logger.debug(f"Generated prompt for LLM: {prompt}")
 
         # 3. Call the LLM to generate the SQL query.
+        if not self.model:
+            # Try to handle basic queries without LLM
+            sql_query = self._generate_basic_sql(query, formatted_schema_parts, project_id, dataset_id)
+            if sql_query:
+                return_value['sql_query'] = sql_query
+                logger.info(f"Generated basic SQL query: {sql_query}")
+            else:
+                return_value['error'] = """Language model is not available. This could be because:
+• Vertex AI API is not enabled for your project
+• Your project doesn't have access to Gemini models
+• Authentication issues
+
+To fix this:
+1. Enable the Vertex AI API in Google Cloud Console
+2. Ensure your service account has 'Vertex AI User' role
+3. Try running: gcloud auth application-default login
+
+I can handle basic queries like 'show first 10 rows', 'count records', or 'show columns' without the language model."""
+                return return_value
+            
         try:
             logger.info("Generating SQL query using LLM...")
             response = self.model.generate_content(prompt)
             # Clean up the response to get only the SQL query
-            sql_query = response.text.strip().replace("```sql", "").replace("```", "").replace("`", "")
+            cleaned_text = response.text.strip()
+            # Remove markdown code blocks
+            cleaned_text = cleaned_text.replace("```sql", "").replace("```", "").replace("`", "")
+
+            # Sometimes the model prefixes with 'bigquery' or 'sql', so we remove it case-insensitively
+            if cleaned_text.lower().lstrip().startswith('bigquery'):
+                # Find the start of the actual SQL statement (e.g., SELECT)
+                select_pos = cleaned_text.lower().find('select')
+                if select_pos != -1:
+                    cleaned_text = cleaned_text[select_pos:]
+            
+            sql_query = cleaned_text
             logger.info(f"Generated SQL query: {sql_query}")
             return_value['sql_query'] = sql_query
         except Exception as e:
@@ -148,3 +208,39 @@ class DataAnalystAgent(Agent):
             return_value['error'] = f"An error occurred while executing the generated SQL query:\n`{sql_query}`\n\n**Error details:**\n{e}"
 
         return return_value
+
+    def _generate_basic_sql(self, query: str, schema_parts: list, project_id: str, dataset_id: str) -> str:
+        """Generate basic SQL queries without using LLM for common patterns."""
+        query_lower = query.lower().strip()
+        
+        # Extract table name from dataset_id (it might be dataset.table format)
+        if '.' in dataset_id:
+            _, table_name = dataset_id.split('.', 1)
+            full_table_ref = f"`{project_id}.{dataset_id}`"
+        else:
+            # If no table specified, try to get first table from schema
+            if schema_parts:
+                first_schema = schema_parts[0]
+                if "Table:" in first_schema:
+                    table_name = first_schema.split("Table:")[1].split(",")[0].strip()
+                    full_table_ref = f"`{project_id}.{dataset_id}.{table_name}`"
+                else:
+                    return None
+            else:
+                return None
+        
+        # Basic query patterns
+        if any(phrase in query_lower for phrase in ["first 10 rows", "show me the first 10", "first ten rows"]):
+            return f"SELECT * FROM {full_table_ref} LIMIT 10"
+        
+        elif any(phrase in query_lower for phrase in ["total number of records", "count records", "how many rows"]):
+            return f"SELECT COUNT(*) as total_records FROM {full_table_ref}"
+        
+        elif any(phrase in query_lower for phrase in ["what columns", "show columns", "column names"]):
+            return f"SELECT column_name FROM `{project_id}.{dataset_id}`.INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}'"
+        
+        elif any(phrase in query_lower for phrase in ["summary", "describe", "overview"]):
+            return f"SELECT * FROM {full_table_ref} LIMIT 5"
+        
+        else:
+            return None
