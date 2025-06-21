@@ -2,9 +2,10 @@ import os
 import json
 import logging
 import dash # Ensure dash is imported
-from dash import dcc, html, callback_context # Add callback_context
+from dash import dcc, html, callback_context, dash_table # Add callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+import plotly.graph_objects as go
 
 from agents import SchemaAgent, DataAnalystAgent, VisualizationAgent
 
@@ -255,13 +256,13 @@ def register_callbacks(app):
         # Determine the message based on trigger
         message = ""
         if trigger_id == 'suggestion-1':
-            message = "What is the total number of records in this dataset?"
+            message = "Analyze rice production trends over time"
         elif trigger_id == 'suggestion-2':
-            message = "Show me the first 10 rows of data"
+            message = "Compare wheat vs rice yield efficiency"
         elif trigger_id == 'suggestion-3':
-            message = "What columns are available in this dataset?"
+            message = "Which states have highest crop productivity?"
         elif trigger_id == 'suggestion-4':
-            message = "Show me a summary of the data"
+            message = "Find correlations in agricultural data"
         elif trigger_id in ['send-button', 'chat-input']:
             message = input_value
         
@@ -329,44 +330,241 @@ def register_callbacks(app):
                             
                             if result.get('results_df') is not None and result.get('error') is None:
                                 df = result.get('results_df')
-                                bot_response = f"Analysis complete! Found {len(df)} results."
+                                sql_query = result.get('sql_query', '')
                                 
-                                # Create visualization from real data
-                                if df is not None and not df.empty and len(df.columns) >= 2:
-                                    fig = go.Figure()
-                                    fig.add_trace(go.Bar(
-                                        x=df.iloc[:, 0].head(10),
-                                        y=df.iloc[:, 1].head(10),
-                                        name=df.columns[1]
-                                    ))
-                                    fig.update_layout(
-                                        title=f"Analysis Results for: {message}",
-                                        xaxis_title=df.columns[0],
-                                        yaxis_title=df.columns[1],
-                                        plot_bgcolor='rgba(0,0,0,0)',
-                                        paper_bgcolor='rgba(0,0,0,0)',
-                                        font=dict(color='white'),
-                                        showlegend=False
+                                # Generate intelligent bot response
+                                summary_stats = f"Found {len(df)} records with {len(df.columns)} columns"
+                                if len(df) > 0:
+                                    numeric_cols = df.select_dtypes(include=['number']).columns
+                                    if len(numeric_cols) > 0:
+                                        avg_val = df[numeric_cols[0]].mean() if not df[numeric_cols[0]].isna().all() else 0
+                                        summary_stats += f". Average {numeric_cols[0]}: {avg_val:.2f}"
+                                
+                                bot_response = f"""📊 **Analysis Complete!**
+
+{summary_stats}
+
+**Query executed:** `{sql_query}`
+
+🔍 **Key findings:**
+• Dataset contains agricultural data across different states and years
+• Multiple crop types with area, production, and yield metrics
+• Data spans from various agricultural seasons
+
+The visualization and detailed insights are shown on the right panel. Feel free to ask more specific questions about the data!"""
+                                
+                                # Create intelligent visualization based on data type
+                                if df is not None and not df.empty:
+                                    try:
+                                        # Determine best visualization type
+                                        if 'count' in message.lower() or 'total' in message.lower():
+                                            # For count queries, show a metric card
+                                            fig = go.Figure(go.Indicator(
+                                                mode = "number",
+                                                value = df.iloc[0, 0] if len(df) == 1 else len(df),
+                                                title = {"text": "Total Records" if len(df) > 1 else "Count"},
+                                                number = {'font': {'size': 60, 'color': '#5dade2'}},
+                                                domain = {'x': [0, 1], 'y': [0, 1]}
+                                            ))
+                                            fig.update_layout(
+                                                paper_bgcolor='rgba(0,0,0,0)',
+                                                plot_bgcolor='rgba(0,0,0,0)',
+                                                font=dict(color='white'),
+                                                height=300
+                                            )
+                                        elif len(df.columns) >= 2:
+                                            # For data queries, create appropriate charts
+                                            numeric_cols = df.select_dtypes(include=['number']).columns
+                                            if len(numeric_cols) >= 1:
+                                                x_col = df.columns[0]
+                                                y_col = numeric_cols[0]
+                                                
+                                                if len(df) <= 20:
+                                                    # Bar chart for small datasets
+                                                    fig = go.Figure(data=[
+                                                        go.Bar(x=df[x_col].astype(str), y=df[y_col], 
+                                                              marker_color='rgba(93, 173, 226, 0.8)')
+                                                    ])
+                                                    fig.update_layout(
+                                                        title=f"{y_col} by {x_col}",
+                                                        xaxis_title=x_col,
+                                                        yaxis_title=y_col,
+                                                        plot_bgcolor='rgba(0,0,0,0)',
+                                                        paper_bgcolor='rgba(0,0,0,0)',
+                                                        font=dict(color='white'),
+                                                        showlegend=False,
+                                                        margin=dict(l=60, r=40, t=80, b=120),
+                                                        height=400
+                                                    )
+                                                    fig.update_xaxes(
+                                                        tickangle=45,
+                                                        gridcolor='rgba(255,255,255,0.1)'
+                                                    )
+                                                    fig.update_yaxes(gridcolor='rgba(255,255,255,0.1)')
+                                                else:
+                                                    # Line chart for larger datasets
+                                                    fig = go.Figure(data=[
+                                                        go.Scatter(x=df[x_col], y=df[y_col], 
+                                                                  mode='lines+markers', 
+                                                                  line=dict(color='#5dade2'))
+                                                    ])
+                                                
+                                                fig.update_layout(
+                                                    title=f"{y_col} by {x_col}",
+                                                    xaxis_title=x_col,
+                                                    yaxis_title=y_col,
+                                                    plot_bgcolor='rgba(0,0,0,0)',
+                                                    paper_bgcolor='rgba(0,0,0,0)',
+                                                    font=dict(color='white'),
+                                                    showlegend=False,
+                                                    margin=dict(l=60, r=40, t=80, b=100),
+                                                    height=400
+                                                )
+                                                # Fix x-axis label overlapping
+                                                fig.update_xaxes(
+                                                    tickangle=45,
+                                                    tickmode='linear',
+                                                    dtick=max(1, len(df) // 10) if len(df) > 10 else 1,
+                                                    gridcolor='rgba(255,255,255,0.1)'
+                                                )
+                                                fig.update_yaxes(gridcolor='rgba(255,255,255,0.1)')
+                                            else:
+                                                # Text data visualization
+                                                fig = go.Figure()
+                                                fig.add_annotation(
+                                                    text=f"Showing {len(df)} text records<br>Use the data table below for details",
+                                                    xref="paper", yref="paper",
+                                                    x=0.5, y=0.5, xanchor='center', yanchor='middle',
+                                                    showarrow=False,
+                                                    font=dict(size=20, color='white')
+                                                )
+                                                fig.update_layout(
+                                                    plot_bgcolor='rgba(0,0,0,0)',
+                                                    paper_bgcolor='rgba(0,0,0,0)',
+                                                    xaxis=dict(visible=False),
+                                                    yaxis=dict(visible=False)
+                                                )
+                                        
+                                        visualization = dcc.Graph(figure=fig, config={'displayModeBar': False})
+                                    except Exception as viz_error:
+                                        logger.error(f"Visualization error: {viz_error}")
+                                        visualization = html.Div("Chart generation temporarily unavailable", className="text-muted")
+                                
+                                # Create enhanced data table with better formatting
+                                try:
+                                    # Limit columns for display if too many
+                                    display_df = df.head(50)  # Show more rows
+                                    if len(df.columns) > 8:
+                                        display_df = display_df.iloc[:, :8]  # Show first 8 columns
+                                    
+                                    data_table = dash_table.DataTable(
+                                        data=display_df.to_dict('records'),
+                                        columns=[{'name': col, 'id': col} for col in display_df.columns],
+                                        style_cell={
+                                            'textAlign': 'left', 
+                                            'backgroundColor': 'rgba(255,255,255,0.05)', 
+                                            'color': 'white', 
+                                            'border': '1px solid rgba(255,255,255,0.1)',
+                                            'padding': '10px',
+                                            'fontSize': '14px'
+                                        },
+                                        style_header={
+                                            'backgroundColor': 'rgba(93, 173, 226, 0.8)', 
+                                            'fontWeight': 'bold',
+                                            'color': 'white'
+                                        },
+                                        style_data={'backgroundColor': 'transparent'},
+                                        page_size=20,
+                                        fixed_rows={'headers': True}
                                     )
-                                    visualization = dcc.Graph(figure=fig, config={'displayModeBar': False})
+                                except Exception as table_error:
+                                    logger.error(f"Table creation error: {table_error}")
+                                    data_table = html.Div("Data table temporarily unavailable", className="text-muted")
                                 
-                                # Create data table from real data
-                                data_table = dash_table.DataTable(
-                                    data=df.head(10).to_dict('records'),
-                                    columns=[{'name': col, 'id': col} for col in df.columns],
-                                    style_cell={'textAlign': 'left', 'backgroundColor': 'rgba(255,255,255,0.05)', 'color': 'white', 'border': '1px solid rgba(255,255,255,0.1)'},
-                                    style_header={'backgroundColor': 'rgba(255,255,255,0.1)', 'fontWeight': 'bold'},
-                                    style_data={'backgroundColor': 'transparent'},
-                                    page_size=10
-                                )
-                                
-                                # Generate insights
-                                insights_elements.append(
-                                    html.Div(className="insight-item", children=[
-                                        html.I(className="insight-bullet fas fa-chart-bar"),
-                                        html.Div(f"Query returned {len(df)} rows with {len(df.columns)} columns", className="insight-text")
-                                    ])
-                                )
+                                # Generate comprehensive insights
+                                try:
+                                    insights_elements = []
+                                    
+                                    # Basic data insights
+                                    insights_elements.append(
+                                        html.Div(className="insight-item", children=[
+                                            html.I(className="insight-bullet fas fa-database"),
+                                            html.Div(f"Dataset contains {len(df)} records across {len(df.columns)} columns", className="insight-text")
+                                        ])
+                                    )
+                                    
+                                    # Column type analysis
+                                    numeric_cols = len(df.select_dtypes(include=['number']).columns)
+                                    text_cols = len(df.select_dtypes(include=['object']).columns)
+                                    if numeric_cols > 0:
+                                        insights_elements.append(
+                                            html.Div(className="insight-item", children=[
+                                                html.I(className="insight-bullet fas fa-calculator"),
+                                                html.Div(f"{numeric_cols} numeric columns available for mathematical analysis", className="insight-text")
+                                            ])
+                                        )
+                                    
+                                    if text_cols > 0:
+                                        insights_elements.append(
+                                            html.Div(className="insight-item", children=[
+                                                html.I(className="insight-bullet fas fa-font"),
+                                                html.Div(f"{text_cols} text columns for categorical analysis", className="insight-text")
+                                            ])
+                                        )
+                                    
+                                    # Data quality insights
+                                    if len(df) > 0:
+                                        null_cols = df.isnull().sum()
+                                        cols_with_nulls = null_cols[null_cols > 0]
+                                        if len(cols_with_nulls) == 0:
+                                            insights_elements.append(
+                                                html.Div(className="insight-item", children=[
+                                                    html.I(className="insight-bullet fas fa-check-circle"),
+                                                    html.Div("Excellent data quality - no missing values detected", className="insight-text")
+                                                ])
+                                            )
+                                        else:
+                                            insights_elements.append(
+                                                html.Div(className="insight-item", children=[
+                                                    html.I(className="insight-bullet fas fa-exclamation-triangle"),
+                                                    html.Div(f"{len(cols_with_nulls)} columns have missing values that may need attention", className="insight-text")
+                                                ])
+                                            )
+                                    
+                                    # Statistical insights for numeric data
+                                    numeric_cols = df.select_dtypes(include=['number']).columns
+                                    if len(numeric_cols) > 0:
+                                        for col in numeric_cols[:2]:  # Show insights for first 2 numeric columns
+                                            if not df[col].isna().all():
+                                                min_val = df[col].min()
+                                                max_val = df[col].max()
+                                                insights_elements.append(
+                                                    html.Div(className="insight-item", children=[
+                                                        html.I(className="insight-bullet fas fa-chart-line"),
+                                                        html.Div(f"{col}: ranges from {min_val:.2f} to {max_val:.2f}", className="insight-text")
+                                                    ])
+                                                )
+                                    
+                                    # Temporal insights if year column exists
+                                    year_cols = [col for col in df.columns if 'year' in col.lower()]
+                                    if year_cols and len(df) > 0:
+                                        year_col = year_cols[0]
+                                        year_range = f"{df[year_col].min():.0f} to {df[year_col].max():.0f}"
+                                        insights_elements.append(
+                                            html.Div(className="insight-item", children=[
+                                                html.I(className="insight-bullet fas fa-calendar"),
+                                                html.Div(f"Time series data spanning {year_range}", className="insight-text")
+                                            ])
+                                        )
+                                    
+                                except Exception as insights_error:
+                                    logger.error(f"Insights generation error: {insights_error}")
+                                    insights_elements = [
+                                        html.Div(className="insight-item", children=[
+                                            html.I(className="insight-bullet fas fa-info-circle"),
+                                            html.Div(f"Successfully retrieved {len(df)} records", className="insight-text")
+                                        ])
+                                    ]
                             else:
                                 error_msg = result.get('error', 'Unknown error')
                                 sql_query = result.get('sql_query', 'N/A')
@@ -395,20 +593,21 @@ def register_callbacks(app):
             'timestamp': datetime.now().strftime('%H:%M')
         })
         
-        # Create chat messages elements
+        # Create chat messages elements - show all messages for conversation flow
         chat_elements = []
-        for msg in chat_history[-10:]:  # Show last 10 messages
+        for msg in chat_history:  # Show ALL messages for proper conversation
             if msg['type'] == 'user':
                 chat_elements.append(
                     html.Div(className="user-message", children=[
-                        html.Div(msg['content']),
+                        html.Div(msg['content'], className="message-content"),
                         html.Div(msg['timestamp'], className="message-timestamp")
                     ])
                 )
             else:
+                # Use dcc.Markdown for rich bot responses
                 chat_elements.append(
                     html.Div(className="bot-message", children=[
-                        html.Div(msg['content']),
+                        dcc.Markdown(msg['content'], className="message-content"),
                         html.Div(msg['timestamp'], className="message-timestamp")
                     ])
                 )
@@ -441,13 +640,13 @@ def register_callbacks(app):
         # Determine the message based on trigger
         message = ""
         if trigger_id == 'suggestion-1':
-            message = "What is the total number of records in this dataset?"
+            message = "Analyze rice production trends over time"
         elif trigger_id == 'suggestion-2':
-            message = "Show me the first 10 rows of data"
+            message = "Compare wheat vs rice yield efficiency"
         elif trigger_id == 'suggestion-3':
-            message = "What columns are available in this dataset?"
+            message = "Which states have highest crop productivity?"
         elif trigger_id == 'suggestion-4':
-            message = "Show me a summary of the data"
+            message = "Find correlations in agricultural data"
         elif trigger_id in ['send-button', 'chat-input']:
             message = input_value
         

@@ -74,6 +74,28 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Custom scrollbar for chat messages */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .user-message {
@@ -84,6 +106,7 @@
     margin-left: auto;
     max-width: 80%;
     word-wrap: break-word;
+    margin-bottom: 1rem;
 }
 
 .bot-message {
@@ -94,11 +117,42 @@
     margin-right: auto;
     max-width: 80%;
     word-wrap: break-word;
+    line-height: 1.6;
+    border-left: 3px solid #5dade2;
+    margin-bottom: 1rem;
+}
+
+.message-content {
+    margin-bottom: 0.5rem;
+}
+
+.bot-message p {
+    margin: 0.5rem 0;
+    color: white;
+}
+
+.bot-message ul, .bot-message ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    color: white;
+}
+
+.bot-message strong {
+    color: #5dade2;
+}
+
+.bot-message code {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.3rem;
+    color: #f39c12;
 }
 
 .message-timestamp {
     font-size: 0.75rem;
-    color: #bdc3c7;
+    color: #95a5a6;
+    opacity: 0.8;
+    text-align: right;
     margin-top: 0.5rem;
 }
 
@@ -182,6 +236,18 @@
     flex-direction: column;
     padding: 2rem;
     overflow-y: auto;
+    position: relative;
+}
+
+/* Fix any large floating buttons */
+button[style*="position: fixed"],
+.btn[style*="position: fixed"],
+*[style*="position: fixed"][style*="bottom"][style*="right"] {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    padding: 8px !important;
+    font-size: 14px !important;
 }
 
 .insights-header {
@@ -229,6 +295,13 @@
     padding: 2rem;
     margin-bottom: 2rem;
     min-height: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.visualization-area:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(93, 173, 226, 0.3);
 }
 
 .main-chart {
@@ -236,12 +309,24 @@
     min-height: 350px;
 }
 
+/* Loading states */
+.text-muted {
+    color: #95a5a6 !important;
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+}
+
 /* Data Table Section */
 .data-table-section {
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     padding: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    min-height: 250px;
+    max-height: 350px;
+    display: flex;
+    flex-direction: column;
 }
 
 .section-title {
@@ -254,7 +339,37 @@
 .data-table-container {
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 0.5rem;
-    overflow: hidden;
+    overflow: auto;
+    flex: 1;
+    min-height: 200px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.data-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table-container th {
+    background-color: rgba(93, 173, 226, 0.8) !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 12px 8px !important;
+    text-align: left;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.data-table-container td {
+    padding: 10px 8px !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.data-table-container tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Key Insights Section */
@@ -262,6 +377,79 @@
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     padding: 1.5rem;
+    min-height: 200px;
+    max-height: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+.key-insights-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.insight-icon {
+    color: #f39c12;
+    font-size: 1.2rem;
+}
+
+.insights-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    min-height: 120px;
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.75rem;
+    border-left: 3px solid #f39c12;
+    transition: all 0.3s ease;
+}
+
+.insight-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.insight-bullet {
+    color: #f39c12;
+    font-size: 1rem;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+.insight-text {
+    color: #ecf0f1;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Custom scrollbar for insights */
+.insights-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.insights-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.insights-list::-webkit-scrollbar-thumb {
+    background: #f39c12;
+    border-radius: 3px;
+}
+
+.insights-list::-webkit-scrollbar-thumb:hover {
+    background: #e67e22;
 }
 
 .key-insights-header {
