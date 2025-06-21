@@ -11,8 +11,6 @@ from typing import Any
 
 class SchemaAgent(Agent):
     """Agent responsible for understanding and retrieving BigQuery database schemas."""
-    project_id: Optional[str] = None
-    connector: Optional[Any] = None
 
     def __init__(self, project_id: Optional[str] = None, name: Optional[str] = "SchemaAgent"): # Add name parameter
         super().__init__(name=name, description="Agent responsible for understanding and retrieving BigQuery database schemas.") # Pass name and description
@@ -24,14 +22,24 @@ class SchemaAgent(Agent):
             logger.error(f"{name}: GOOGLE_CLOUD_PROJECT environment variable not set and no project_id provided.")
             raise ValueError(f"{name}: GOOGLE_CLOUD_PROJECT environment variable not set and no project_id provided.")
 
-        self.project_id = project_id # Store project_id
+        self._project_id = project_id # Store project_id
         try:
-            self.connector = BigQueryConnector(project_id=self.project_id)
-            logger.info(f"{name} initialized with project_id: {self.project_id}")
+            self._connector = BigQueryConnector(project_id=self._project_id)
+            logger.info(f"{name} initialized with project_id: {self._project_id}")
         except Exception as e:
             logger.error(f"Error initializing BigQueryConnector in {name}: {e}")
-            self.connector = None
+            self._connector = None
             # raise e # Or re-raise if the connector is critical for __init__
+
+    @property
+    def project_id(self) -> str:
+        """Get the project ID."""
+        return self._project_id
+
+    @property
+    def connector(self):
+        """Get the BigQuery connector."""
+        return self._connector
 
     def get_available_datasets(self) -> List[str]:
         """Retrieves a list of available dataset IDs from BigQuery."""
@@ -117,7 +125,7 @@ if __name__ == '__main__':
     else:
         agent = SchemaAgent()
         if agent.connector: # Check if connector was initialized
-            print(f"SchemaAgent created for project: {agent.connector.project_id}")
+            print(f"SchemaAgent created for project: {agent.project_id}")
 
             datasets = agent.get_available_datasets()
             print(f"Available datasets: {datasets}")

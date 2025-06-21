@@ -25,25 +25,46 @@ class DataAnalystAgent(Agent):
             logger.error(f"{name}: GOOGLE_CLOUD_PROJECT environment variable not set and no project_id provided.")
             raise ValueError(f"{name}: GOOGLE_CLOUD_PROJECT environment variable not set and no project_id provided.")
 
-        self.project_id = project_id
+        # Store project_id in a way that works with ADK Agent
+        self._project_id = project_id
         try:
-            self.connector = BigQueryConnector(project_id=self.project_id) # Connector for the tool
-            self.bigquery_tool = BigQueryTool(connector=self.connector)
-            logger.info(f"{name} initialized BigQueryTool with project_id: {self.project_id}")
+            self._connector = BigQueryConnector(project_id=self._project_id) # Connector for the tool
+            self._bigquery_tool = BigQueryTool(connector=self._connector)
+            logger.info(f"{name} initialized BigQueryTool with project_id: {self._project_id}")
         except Exception as e:
             logger.error(f"Error initializing BigQueryConnector or BigQueryTool in {name}: {e}")
-            self.connector = None
-            self.bigquery_tool = None # Ensure tool is also None if connector fails
+            self._connector = None
+            self._bigquery_tool = None # Ensure tool is also None if connector fails
 
         try:
-            self.schema_agent = SchemaAgent(project_id=self.project_id, name="DataAnalystInternalSchemaAgent")
+            self._schema_agent = SchemaAgent(project_id=self._project_id, name="DataAnalystInternalSchemaAgent")
             logger.info(f"{name} successfully initialized internal SchemaAgent.")
         except Exception as e:
             logger.error(f"Error initializing internal SchemaAgent in {name}: {e}")
-            self.schema_agent = None
+            self._schema_agent = None
 
         self.model = GenerativeModel("gemini-1.0-pro")
         logger.info(f"{name} (DataAnalystAgent) initialized successfully.")
+
+    @property
+    def project_id(self) -> str:
+        """Get the project ID."""
+        return self._project_id
+
+    @property
+    def connector(self):
+        """Get the BigQuery connector."""
+        return self._connector
+
+    @property
+    def bigquery_tool(self):
+        """Get the BigQuery tool."""
+        return self._bigquery_tool
+
+    @property
+    def schema_agent(self):
+        """Get the schema agent."""
+        return self._schema_agent
 
     def process(self, query: str, dataset_schema: dict, project_id: str, dataset_id: str) -> dict:
         """

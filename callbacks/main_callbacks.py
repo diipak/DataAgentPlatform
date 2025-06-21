@@ -295,19 +295,26 @@ def register_callbacks(app):
                     logger.info(f"DataAnalystAgent initialized successfully")
                 except Exception as agent_error:
                     logger.error(f"Error initializing DataAnalystAgent: {agent_error}")
-                    bot_response = f"Sorry, I encountered an error initializing the data analysis service."
+                    if "credentials" in str(agent_error).lower():
+                        bot_response = f"Authentication issue: Please check your Google Cloud credentials are properly configured."
+                    elif "permission" in str(agent_error).lower():
+                        bot_response = f"Permission issue: Please ensure your service account has BigQuery access permissions."
+                    elif "project" in str(agent_error).lower():
+                        bot_response = f"Project issue: Please verify the Google Cloud Project ID is correct."
+                    else:
+                        bot_response = f"Configuration issue: {str(agent_error)}"
                     
-                if 'data_analyst' in locals() and data_analyst.schema_agent and data_analyst.bigquery_tool:
+                if 'data_analyst' in locals() and hasattr(data_analyst, 'schema_agent') and hasattr(data_analyst, 'bigquery_tool') and data_analyst.schema_agent and data_analyst.bigquery_tool:
                     # Get dataset schema
                     dataset_schema = data_analyst.schema_agent.get_full_dataset_schema(selected_dataset)
                     
                     if not dataset_schema:
-                        bot_response = f"Could not retrieve schema for dataset: {selected_dataset}"
+                        bot_response = f"The dataset '{selected_dataset}' appears to be empty or could not be accessed. This could be because:\n• The dataset has no tables yet\n• Access permissions need to be configured\n• The dataset doesn't exist\n\nOnce you add tables to the dataset, I'll be able to analyze your data!"
                     else:
                         # Get the first table from the dataset schema for processing
                         first_table = list(dataset_schema.keys())[0] if dataset_schema else None
                         if not first_table:
-                            bot_response = "No tables found in the selected dataset"
+                            bot_response = f"The dataset '{selected_dataset}' was found but contains no tables yet. Please add some tables with data, and I'll be ready to help you analyze it!"
                         else:
                             # Construct full table reference: dataset.table
                             full_table_ref = f"{selected_dataset}.{first_table}"
@@ -364,8 +371,16 @@ def register_callbacks(app):
                                 error_msg = result.get('error', 'Unknown error')
                                 sql_query = result.get('sql_query', 'N/A')
                                 bot_response = f"Sorry, I encountered an error processing your query: {error_msg}"
+                elif 'data_analyst' in locals():
+                    # Agent was created but some components failed to initialize
+                    if not hasattr(data_analyst, 'schema_agent') or not data_analyst.schema_agent:
+                        bot_response = "Schema agent failed to initialize. Please check BigQuery access permissions and project configuration."
+                    elif not hasattr(data_analyst, 'bigquery_tool') or not data_analyst.bigquery_tool:
+                        bot_response = "BigQuery tool failed to initialize. Please check your Google Cloud credentials and project access."
+                    else:
+                        bot_response = "Some agent components failed to initialize. Please check your Google Cloud configuration."
                 else:
-                    bot_response = "Agent services are not properly initialized. Please check configuration."
+                    bot_response = "Failed to initialize data analysis agents. Please check your Google Cloud Project configuration and credentials."
             else:
                 bot_response = "Please select a dataset first to analyze your data."
                 
