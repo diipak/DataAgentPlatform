@@ -1,0 +1,420 @@
+/* Layout styles for the Data Agent Platform */
+
+/* Base Layout */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+}
+
+/* Main Content Area */
+.main-content {
+    display: flex;
+    flex: 1;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    max-width: 100%;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Navigation Bar */
+.navbar {
+    padding: 0.75rem 1.5rem;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: var(--z-fixed);
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: var(--light-text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color var(--transition-speed) var(--transition-timing);
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    height: calc(100vh - 5rem);
+    position: sticky;
+    top: 1.5rem;
+    overflow-y: auto;
+}
+
+/* Main Content Area */
+.content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Card Layout */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed) var(--transition-timing);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Responsive Layout */
+@media (max-width: 1024px) {
+    .main-content {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Dark Mode Overrides */
+.dark-mode .navbar {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dark-mode .navbar-brand {
+    color: var(--light-text);
+}
+
+.dark-mode .nav-link {
+    color: var(--light-text);
+}
+
+.dark-mode .nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Header Title Styling */
+.header-title { /* Renamed from .chat-header-text for clarity */
+    font-size: 1.15rem; /* Slightly larger */
+    font-weight: 600;
+    margin: 0; /* Remove default margins */
+    line-height: 1.2;
+}
+
+.header-subtitle { /* Renamed from .chat-header-subtext */
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin: 0; /* Remove default margins */
+    line-height: 1.2;
+}
+
+/* Chat Panel */
+.chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color); /* Default border */
+    height: 100%;
+    max-width: 50%;
+    /* Ensure panel itself uses flex */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Make panel fill height */
+}
+/* Theme-specific border */
+.app-container.dark-mode .chat-panel {
+    border-right-color: var(--border-color);
+}
+.app-container.light-mode .chat-panel {
+    border-right-color: var(--light-border-color);
+}
+
+.chat-container { /* Corrected selector */
+    flex-grow: 1; /* Let it grow */
+    flex-shrink: 1; /* Allow shrinking */
+    flex-basis: auto; /* Default basis */
+    overflow-y: auto; /* Enable scrolling */
+    padding: 1.5rem; /* Increase padding */
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: column; /* Stack messages vertically */
+    min-height: 0; /* Prevent flex item from overflowing */
+}
+
+/* Visualization Panel */
+.visualization-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    display: flex; /* Ensure panel uses flex */
+    flex-direction: column; /* Stack items vertically */
+    position: relative; /* For absolute positioning of fixed elements */
+}
+
+.visualization-container {
+    flex-grow: 1; /* Let it grow */
+    flex-shrink: 1; /* Allow shrinking */
+    flex-basis: auto; /* Default basis */
+    overflow-y: auto; /* Allows scrolling */
+    padding: 1.5rem 2rem; /* Increase horizontal padding */
+    min-height: 0; /* Prevent flex item from overflowing */
+    padding-bottom: calc(1.5rem + 180px); /* Increased padding to prevent content from being hidden */
+}
+
+/* Ensure bottom sections in chat panel do not grow */
+.suggestion-section,
+.loading-indicator-container,
+.chat-input-area {
+    flex: 0 0 auto; /* Prevent growing or shrinking */
+}
+
+/* Ensure bottom sections in viz panel do not grow */
+.key-insights-section, /* If it should be fixed bottom */
+.tech-details-accordion-container {
+    flex: 0 0 auto; /* Prevent growing or shrinking */
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) { /* Adjusted breakpoint for better split */
+    .chat-panel {
+        max-width: 45%; /* Slightly adjust split */
+    }
+    .visualization-panel {
+        max-width: 55%;
+    }
+
+    /* Adjust chart margins for medium screens */
+    .chart-container .js-plotly-plot,
+    .chart-container div[class*="plotly"],
+    .chart-container .dash-graph {
+        margin-bottom: 40px !important; /* Reduced margin */
+        height: 450px !important;
+    }
+
+    /* Adjust SVG container height for medium screens */
+    .chart-container .js-plotly-plot .plot-container .svg-container {
+        height: 450px !important;
+    }
+}
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .chat-panel {
+        max-width: 100%;
+        height: 50vh;
+        border-right: none; /* Remove border in column layout */
+        border-bottom: 1px solid var(--border-color);
+    }
+    .app-container.light-mode .chat-panel {
+        border-bottom-color: var(--light-border-color);
+    }
+
+    .visualization-panel {
+        max-width: 100%;
+        height: calc(100vh - 60px - 50vh); /* Adjust height calculation */
+    }
+
+    .visualization-container {
+        padding: 1rem;
+        padding-bottom: calc(1rem + 150px); /* Adjusted padding for mobile */
+    }
+
+    /* Adjust chart margins for mobile */
+    .chart-container .js-plotly-plot,
+    .chart-container div[class*="plotly"],
+    .chart-container .dash-graph {
+        margin-bottom: 30px !important; /* Further reduced margin */
+        height: 400px !important; /* Reduced height for mobile */
+    }
+
+    /* Adjust SVG container height for mobile */
+    .chart-container .js-plotly-plot .plot-container .svg-container {
+        height: 400px !important;
+    }
+
+    /* Adjust key insights fixed section for mobile */
+    .key-insights-fixed-section {
+        padding: 0.75rem 1rem; /* Reduced padding for mobile */
+    }
+
+    .key-insights-content {
+        max-height: 100px; /* Reduced height for mobile */
+    }
+
+    /* Adjust visualization container padding for mobile */
+    .visualization-container {
+        padding-bottom: calc(1.5rem + 150px); /* Adjusted padding for mobile */
+    }
+
+    /* Improve table scrolling on mobile */
+    .data-table-section {
+        overflow-x: auto; /* Enable horizontal scrolling for tables */
+    }
+
+    /* Adjust header for mobile */
+    .header {
+        padding: 0.5rem 1rem; /* Reduce padding */
+    }
+
+    .header-title {
+        font-size: 1rem; /* Smaller title on mobile */
+    }
+
+    .header-subtitle {
+        font-size: 0.7rem; /* Smaller subtitle on mobile */
+    }
+
+    .header .d-none.d-lg-block { /* Ensure insights header part hides */
+        display: none !important;
+    }
+    .header .col-auto:first-child { /* Allow chatbot title to take more space */
+        flex-grow: 1;
+    }
+
+    /* Improve suggestion pills on mobile */
+    .suggestion-pill {
+        padding: 0.25rem 0.75rem !important; /* Smaller padding */
+        font-size: 0.7rem !important; /* Smaller font */
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 576px) {
+    .chat-panel {
+        height: 45vh; /* Give more space to visualization panel on very small screens */
+    }
+
+    .visualization-panel {
+        height: calc(100vh - 60px - 45vh); /* Adjust height calculation */
+    }
+
+    /* Further reduce padding */
+    .visualization-container {
+        padding: 0.5rem;
+    }
+
+    /* Adjust chart height for very small screens */
+    .chart-container .js-plotly-plot,
+    .chart-container div[class*="plotly"],
+    .chart-container .dash-graph {
+        height: 350px !important; /* Further reduced height for very small screens */
+        margin-bottom: 20px !important;
+    }
+
+    /* Adjust SVG container height for very small screens */
+    .chart-container .js-plotly-plot .plot-container .svg-container {
+        height: 350px !important;
+    }
+
+    /* Further adjust key insights fixed section for very small screens */
+    .key-insights-fixed-section {
+        padding: 0.5rem 0.75rem; /* Further reduced padding */
+    }
+
+    .key-insights-content {
+        max-height: 80px; /* Further reduced height */
+    }
+
+    /* Adjust visualization container padding for very small screens */
+    .visualization-container {
+        padding-bottom: calc(0.75rem + 120px); /* Further adjusted padding for very small screens */
+    }
+
+    /* Make insight items more compact */
+    .insight-item {
+        margin-bottom: 0.25rem; /* Further reduced margin */
+        font-size: 0.8rem; /* Smaller font size */
+    }
+
+    .key-insights-title {
+        font-size: 1rem; /* Smaller title */
+        margin-bottom: 0.5rem; /* Reduced margin */
+    }
+
+    /* Stack header elements on very small screens */
+    .header > .col-6 {
+        width: 100% !important;
+        text-align: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .header {
+        flex-direction: column;
+        height: auto; /* Allow header to expand */
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    /* Center header content */
+    .header > .col-6 > div {
+        justify-content: center !important;
+    }
+
+    /* Adjust theme toggle button position */
+    .theme-toggle-button {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 32px !important;
+        height: 32px !important;
+    }
+}

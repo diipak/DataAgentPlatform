@@ -7,8 +7,12 @@ from connectors.bigquery_connector import BigQueryConnector
 
 logger = logging.getLogger(__name__)
 
+from typing import Any
+
 class SchemaAgent(Agent):
     """Agent responsible for understanding and retrieving BigQuery database schemas."""
+    project_id: Optional[str] = None
+    connector: Optional[Any] = None
 
     def __init__(self, project_id: Optional[str] = None, name: Optional[str] = "SchemaAgent"): # Add name parameter
         super().__init__(name=name, description="Agent responsible for understanding and retrieving BigQuery database schemas.") # Pass name and description

@@ -1,0 +1,659 @@
+/* ======================
+   Visualization Styles
+   ====================== */
+
+/* Base Container */
+.visualization-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Card Styling for Visualization Panel Sections */
+.chart-container,
+.data-table-section,
+.key-insights-section,
+.query-info {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed) var(--transition-timing);
+}
+
+.chart-container:hover,
+.data-table-section:hover,
+.key-insights-section:hover,
+.query-info:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+
+/* Chart Header */
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-text);
+    margin: 0;
+}
+
+.chart-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Chart Content */
+.chart-content {
+    flex: 1;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Data Table Section */
+.data-table-section {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.data-table-container {
+    width: 100%;
+    overflow-x: auto;
+    position: relative;
+}
+
+/* Custom scrollbar for WebKit browsers */
+.data-table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.data-table-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.data-table-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.data-table-container::-webkit-scrollbar-thumb:hover {
+    background-color: var(--light-text);
+}
+
+/* Modern browsers with scrollbar support */
+@supports (scrollbar-width: thin) {
+    .data-table-container {
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+    }
+}
+
+/* Touch devices - ensure smooth scrolling */
+@media (hover: none) and (pointer: coarse) {
+    .data-table-container {
+        /* Modern iOS devices handle this automatically */
+        /* For older iOS devices, this is handled by the browser */
+        scroll-behavior: smooth;
+    }
+}
+
+/* Table Styles */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    font-weight: 600;
+    background-color: var(--hover-color);
+    color: var(--dark-text);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--hover-color);
+}
+
+/* Key Insights Section */
+.key-insights-section {
+    background-color: var(--primary-light);
+    border-left: 4px solid var(--primary-color);
+}
+
+.key-insights-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.insights-list {
+    padding-left: 1.25rem;
+    margin: 0;
+}
+
+.insight-item {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.insight-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Query Info Section */
+.query-info {
+    background-color: var(--card-bg);
+    border-left: 4px solid var(--accent-color);
+}
+
+.query-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--dark-text);
+}
+
+.query-sql {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    background-color: var(--dark-bg);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 0;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--light-text);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state-text {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: var(--light-text);
+}
+
+/* Dark Mode Overrides */
+.dark-mode .chart-container {
+    background-color: var(--card-bg);
+}
+
+.dark-mode .data-table th {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .data-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .key-insights-section {
+    background-color: rgba(67, 97, 238, 0.1);
+}
+
+.dark-mode .query-sql {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #e2e8f0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .chart-container,
+    .data-table-section,
+    .key-insights-section,
+    .query-info {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .chart-title {
+        font-size: 1.1rem;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Plotly Chart Overrides */
+.dash-graph {
+    width: 100%;
+    height: 100%;
+}
+
+/* Ensure Plotly charts are responsive */
+.js-plotly-plot,
+.plot-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+.app-container.dark-mode .chart-title {
+    color: var(--light-text);
+}
+.app-container.light-mode .chart-title {
+    color: var(--dark-text);
+}
+
+.visualization-subtitle {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* Add spacing between chart and insights */
+.visualization-container {
+    padding-bottom: calc(2rem + 180px);  /* Increased padding */
+}
+
+.data-table-section {
+    position: relative;
+    margin-bottom: 3rem;  /* Increased margin for better separation */
+    padding: 1.75rem;
+}
+
+/* Add visual separator between sections */
+.data-table-section::after {
+    content: '';
+    position: absolute;
+    bottom: -1.5rem;
+    left: 1.75rem;
+    right: 1.75rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--primary-color), transparent);
+    opacity: 0.3;
+}
+
+.app-container.light-mode .data-table-section::after {
+    background: linear-gradient(90deg, var(--light-primary-color), transparent);
+}
+
+.data-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem; /* Increased margin */
+}
+
+.data-table-title {
+    font-size: 1.1rem; /* Slightly larger */
+    font-weight: 600;
+    margin: 0;
+    transition: color var(--transition-speed);
+}
+.app-container.dark-mode .data-table-title {
+    color: var(--light-text);
+}
+.app-container.light-mode .data-table-title {
+    color: var(--dark-text);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);  /* Subtle background */
+}
+
+.app-container.light-mode .data-table {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* Theme-specific table borders and header */
+.app-container.dark-mode .data-table th,
+.app-container.dark-mode .data-table td {
+    border-color: var(--border-color);
+}
+.app-container.light-mode .data-table th,
+.app-container.light-mode .data-table td {
+    border-color: var(--light-border-color);
+}
+.app-container.dark-mode .data-table th {
+    background-color: rgba(255, 255, 255, 0.05); /* Darker header */
+    color: var(--light-text); /* Ensure header text is light */
+}
+.app-container.light-mode .data-table th {
+    background-color: rgba(0, 0, 0, 0.03); /* Lighter header */
+    color: var(--dark-text); /* Ensure header text is dark */
+}
+/* Ensure table body and cells inherit correct background/color */
+.app-container.dark-mode .data-table tbody,
+.app-container.dark-mode .data-table td {
+    background-color: transparent !important; /* Ensure transparency */
+    color: var(--light-text) !important;
+}
+.app-container.light-mode .data-table tbody,
+.app-container.light-mode .data-table td {
+    background-color: transparent !important; /* Ensure transparency */
+    color: var(--dark-text) !important;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem 1.25rem;  /* Increased padding */
+    text-align: left;
+    border-bottom: 1px solid;
+    font-size: 0.9rem;
+}
+
+.data-table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Add theme-specific hover effect for table rows */
+.app-container.dark-mode .data-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important; /* Slightly lighter hover */
+    color: var(--light-text);
+}
+.app-container.light-mode .data-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important; /* Slightly darker hover */
+    color: var(--dark-text);
+}
+
+/* Row hover effect */
+.data-table tr:hover td {
+    transition: background-color var(--transition-speed);
+}
+
+/* Number formatting */
+.data-table td[data-dash-column^="avg_"],
+.data-table td[data-dash-column^="total_"] {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Query Info Section */
+.query-info-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 0.25rem;
+    font-weight: 500; /* Slightly bolder */
+}
+
+.query-text {
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 0;
+    font-style: italic; /* Italicize the query */
+}
+
+/* Technical Details Accordion */
+.tech-details-accordion-container {
+    margin-top: 1.5rem;
+}
+.tech-details-accordion .accordion-button {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 8px !important;
+}
+.tech-details-accordion .accordion-body {
+    padding: 1rem;
+    font-size: 0.85rem;
+}
+
+.app-container.dark-mode .tech-details-accordion .accordion-item {
+    border: 1px solid var(--border-color);
+}
+.app-container.dark-mode .tech-details-accordion .accordion-button {
+    background-color: var(--card-bg);
+    color: var(--light-text);
+}
+.app-container.dark-mode .tech-details-accordion .accordion-button:hover {
+    background-color: var(--hover-color);
+}
+.app-container.dark-mode .tech-details-accordion .accordion-body {
+    background-color: var(--dark-bg); /* Slightly darker body */
+    color: var(--light-text);
+    border-top: 1px solid var(--border-color);
+}
+.app-container.dark-mode .tech-details-accordion .accordion-body code {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #cdd5f5; /* Light blueish code text */
+}
+
+.app-container.light-mode .tech-details-accordion .accordion-item {
+    border: 1px solid var(--light-border-color);
+}
+.app-container.light-mode .tech-details-accordion .accordion-button {
+    background-color: var(--light-card-bg);
+    color: var(--dark-text);
+}
+.app-container.light-mode .tech-details-accordion .accordion-button:hover {
+    background-color: var(--light-hover-color);
+}
+.app-container.light-mode .tech-details-accordion .accordion-body {
+    background-color: #f8f9fa; /* Very light gray */
+    color: var(--dark-text);
+    border-top: 1px solid var(--light-border-color);
+}
+.app-container.light-mode .tech-details-accordion .accordion-body code {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+/* Plotly Chart Fixes */
+/* Apply !important cautiously, only where necessary to override Plotly defaults */
+.js-plotly-plot .plotly .xtick text,
+div[class*="plotly"] .xtick text,
+.dash-graph .xtick text {
+    transform: rotate(-45deg) !important; /* Angle labels for better fit */
+    text-anchor: end !important; /* Align text end for angled labels */
+    font-size: 10px !important; /* Smaller font size */
+    fill: var(--light-text) !important; /* Ensure visibility in dark mode */
+}
+
+.app-container.light-mode .js-plotly-plot .plotly .xtick text,
+.app-container.light-mode div[class*="plotly"] .xtick text,
+.app-container.light-mode .dash-graph .xtick text {
+    fill: var(--dark-text) !important; /* Dark text for light mode */
+}
+
+/* Adjust chart margins to prevent label cutoff */
+.js-plotly-plot .plotly .main-svg,
+div[class*="plotly"] .main-svg,
+.dash-graph .main-svg {
+    margin-bottom: 50px !important; /* Increased margin */
+}
+
+/* Fix chart container height */
+.chart-container .js-plotly-plot .plot-container .svg-container {
+    height: 450px !important; /* Reduced height to match container */
+    margin: 0 auto;  /* Center the chart */
+}
+
+/* Fix axis labels */
+.js-plotly-plot .plotly .ytitle,
+div[class*="plotly"] .ytitle,
+.dash-graph .ytitle {
+    font-family: 'Inter', Arial, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--light-text) !important; /* Ensure visibility in dark mode */
+}
+
+.js-plotly-plot .plotly .xtitle,
+div[class*="plotly"] .xtitle,
+.dash-graph .xtitle {
+    font-family: 'Inter', Arial, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    margin-top: 20px !important; /* Keep margin for x-axis title */
+    color: var(--light-text) !important; /* Ensure visibility in dark mode */
+}
+
+/* Light mode specific axis title colors */
+.app-container.light-mode .js-plotly-plot .plotly .ytitle,
+.app-container.light-mode div[class*="plotly"] .ytitle,
+.app-container.light-mode .dash-graph .ytitle,
+.app-container.light-mode .js-plotly-plot .plotly .xtitle,
+.app-container.light-mode div[class*="plotly"] .xtitle,
+.app-container.light-mode .dash-graph .xtitle {
+    color: var(--dark-text) !important; /* Dark text for light mode */
+}
+
+/* Hide any unwanted annotations */
+.js-plotly-plot .plotly .annotation,
+div[class*="plotly"] .annotation {
+    display: none !important;
+}
+
+/* Ensure data table has consistent number formatting */
+.data-table td[data-dash-column^="avg_"],
+.data-table td[data-dash-column^="total_"] {
+    text-align: right;
+    font-variant-numeric: tabular-nums; /* Apply here too */
+}
+
+/* Add platform information to visualization titles */
+.chart-title[data-platform]::after {
+    content: " on " attr(data-platform);
+    font-weight: normal;
+    opacity: 0.8; /* Make it slightly less prominent */
+    font-size: 0.9em; /* Slightly smaller */
+}
+
+/* Enhanced Key Insights Section Styling */
+.key-insights-fixed-section {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--dark-bg);
+    border-top: 1px solid var(--border-color);
+    padding: 0;
+    margin-top: 1rem;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+    z-index: 10; /* Ensure it stays above other content */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Add shadow for visual separation */
+}
+
+.app-container.light-mode .key-insights-fixed-section {
+    background-color: var(--light-bg);
+    border-top: 1px solid var(--light-border-color);
+}
+
+/* Visual separator with gradient */
+.key-insights-visual-separator {
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    margin-bottom: 0;
+}
+
+.app-container.light-mode .key-insights-visual-separator {
+    background: linear-gradient(90deg, var(--light-primary-color), var(--light-secondary-color));
+}
+
+/* Title bar with flex layout */
+.key-insights-title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.app-container.light-mode .key-insights-title-bar {
+    border-bottom: 1px solid var(--light-border-color);
+}
+
+.key-insights-title {
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Settings area for metric selection */
+.key-insights-settings {
+    display: flex;
+    align-items: center;
+}
+
+.metric-selector {
+    font-size: 0.8rem;
+}
+
+/* Content area with scrollable design */
+.key-insights-content {
+    padding: 1rem;
+    max-height: 200px; /* Limit height */
+    overflow-y: auto; /* Make scrollable */
+}
+
+/* Style for individual insight items */
+.insight-item {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.insight-item:before {
+    content: '•';
+    position: absolute;
+    left: 0.5rem;
+    color: var(--primary-color);
+}
+
+.app-container.light-mode .insight-item:before {
+    color: var(--light-primary-color);
+}

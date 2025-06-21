@@ -1,0 +1,211 @@
+/* Adaptive Insights Styles for Data Agent Platform */
+
+/* Base Insight Styles */
+.insights-container {
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.insight-item {
+    position: relative;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.app-container.light-mode .insight-item {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.insight-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Complexity-based Styling */
+.insight-high {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.app-container.light-mode .insight-high {
+    border-left: 4px solid var(--light-primary-color);
+}
+
+.insight-medium {
+    border-left: 2px solid var(--primary-color);
+}
+
+.app-container.light-mode .insight-medium {
+    border-left: 2px solid var(--light-primary-color);
+}
+
+.insight-low {
+    opacity: 0.9;
+}
+
+/* Category-based Styling */
+.insight-category-comparison {
+    border-left-color: #bb86fc;
+}
+
+.app-container.light-mode .insight-category-comparison {
+    border-left-color: #6200ee;
+}
+
+.insight-category-trend {
+    border-left-color: #03dac6;
+}
+
+.app-container.light-mode .insight-category-trend {
+    border-left-color: #018786;
+}
+
+.insight-category-statistical {
+    border-left-color: #cf6679;
+}
+
+.app-container.light-mode .insight-category-statistical {
+    border-left-color: #b00020;
+}
+
+/* Simple Layout */
+.simple-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Card Layout */
+.card-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.insight-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.app-container.light-mode .insight-card {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.card-title {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.app-container.light-mode .card-title {
+    border-bottom: 1px solid var(--light-border-color);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.card-content {
+    padding: 0.75rem;
+}
+
+.featured-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+.app-container.light-mode .featured-card {
+    border-left: 4px solid var(--light-primary-color);
+}
+
+.featured-card .card-title {
+    color: var(--primary-color);
+}
+
+.app-container.light-mode .featured-card .card-title {
+    color: var(--light-primary-color);
+}
+
+.secondary-card {
+    opacity: 0.8;
+}
+
+.featured-insight {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.app-container.light-mode .featured-insight {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Tabbed Layout */
+.insights-tabs {
+    width: 100%;
+}
+
+.insights-tabs .nav-link {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.insights-tabs .tab-content {
+    padding: 1rem 0;
+}
+
+.insight-tab-comparison .nav-link.active {
+    color: #bb86fc !important;
+    border-color: #bb86fc !important;
+}
+
+.app-container.light-mode .insight-tab-comparison .nav-link.active {
+    color: #6200ee !important;
+    border-color: #6200ee !important;
+}
+
+.insight-tab-trend .nav-link.active {
+    color: #03dac6 !important;
+    border-color: #03dac6 !important;
+}
+
+.app-container.light-mode .insight-tab-trend .nav-link.active {
+    color: #018786 !important;
+    border-color: #018786 !important;
+}
+
+.insight-tab-statistical .nav-link.active {
+    color: #cf6679 !important;
+    border-color: #cf6679 !important;
+}
+
+.app-container.light-mode .insight-tab-statistical .nav-link.active {
+    color: #b00020 !important;
+    border-color: #b00020 !important;
+}
+
+.insight-tab-general .nav-link.active {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.app-container.light-mode .insight-tab-general .nav-link.active {
+    color: var(--light-primary-color) !important;
+    border-color: var(--light-primary-color) !important;
+}
+
+.category-insights-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* No Insights Message */
+.no-insights-message {
+    padding: 1rem;
+    text-align: center;
+    opacity: 0.7;
+    font-style: italic;
+}

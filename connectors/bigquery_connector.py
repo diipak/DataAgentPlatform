@@ -67,6 +67,19 @@ class BigQueryConnector(DatabaseConnectorInterface):
             logger.error(f"Error getting schema for table {table_ref}: {str(e)}")
             return None
 
+    def get_table_info(self) -> Dict[str, List[str]]:
+        """Get information about tables in the database, organized by dataset."""
+        try:
+            datasets = self.list_datasets()
+            table_info = {}
+            for dataset_id in datasets:
+                table_info[dataset_id] = self.list_tables(dataset_id)
+            logger.info("Successfully retrieved table info for all datasets.")
+            return table_info
+        except Exception as e:
+            logger.error(f"Error getting table info: {str(e)}")
+            return {}
+
     def get_row_counts(self) -> Dict[str, int]:
         """Get the number of rows in each table."""
         try:

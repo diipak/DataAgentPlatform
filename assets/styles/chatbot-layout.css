@@ -1,0 +1,535 @@
+/* ======================
+   Chatbot Layout Styles
+   ====================== */
+
+/* Override existing app-container for new two-panel design */
+.app-container.dark-theme {
+    height: 100vh;
+    overflow: hidden;
+    font-family: var(--font-sans);
+}
+
+/* Two-panel layout */
+.main-panels {
+    display: flex;
+    height: 100vh;
+    background-color: var(--color-bg, #2c3e50);
+}
+
+/* Left Panel - Chat Section */
+.chat-section {
+    width: 50%;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    color: white;
+}
+
+.chat-header {
+    margin-bottom: 2rem;
+}
+
+.chat-title-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.chat-icon {
+    font-size: 2.5rem;
+    color: #5dade2;
+}
+
+.chat-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    color: white;
+}
+
+.chat-subtitle {
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+    color: #bdc3c7;
+}
+
+/* Chat Messages Container */
+.chat-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 2rem;
+    padding-right: 1rem;
+}
+
+.welcome-message {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #5dade2;
+}
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.user-message {
+    background-color: #5dade2;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
+    margin-left: auto;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.bot-message {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 1.5rem 1.5rem 1.5rem 0.5rem;
+    margin-right: auto;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.message-timestamp {
+    font-size: 0.75rem;
+    color: #bdc3c7;
+    margin-top: 0.5rem;
+}
+
+/* Suggestions */
+.suggestions-container {
+    margin-bottom: 2rem;
+}
+
+.suggestions-title {
+    font-size: 0.9rem;
+    color: #bdc3c7;
+    margin-bottom: 1rem;
+}
+
+.suggestion-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.suggestion-btn {
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.suggestion-btn:hover {
+    background-color: rgba(93, 173, 226, 0.2);
+    border-color: #5dade2;
+    color: white;
+    transform: translateX(5px);
+}
+
+/* Chat Input */
+.chat-input-container {
+    margin-top: auto;
+}
+
+.chat-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+}
+
+.chat-input::placeholder {
+    color: #bdc3c7;
+}
+
+.chat-input:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #5dade2;
+    box-shadow: 0 0 0 0.2rem rgba(93, 173, 226, 0.25);
+    color: white;
+}
+
+.send-button {
+    background-color: #5dade2;
+    border-color: #5dade2;
+    border-radius: 0 1.5rem 1.5rem 0;
+    padding: 1rem 1.5rem;
+}
+
+.send-button:hover {
+    background-color: #4a94c7;
+    border-color: #4a94c7;
+}
+
+/* Right Panel - Insights Section */
+.insights-section {
+    width: 50%;
+    background-color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.insights-title-container {
+    flex: 1;
+}
+
+.insights-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    color: white;
+}
+
+.insights-subtitle {
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+    color: #bdc3c7;
+}
+
+.theme-toggle {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-left: 1rem;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Visualization Area */
+.visualization-area {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    min-height: 400px;
+}
+
+.main-chart {
+    height: 100%;
+    min-height: 350px;
+}
+
+/* Data Table Section */
+.data-table-section {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.data-table-container {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+/* Key Insights Section */
+.key-insights-section {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.key-insights-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.insight-icon {
+    color: #f39c12;
+    font-size: 1.2rem;
+}
+
+.insights-list {
+    color: #ecf0f1;
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    border-left: 3px solid #5dade2;
+}
+
+.insight-bullet {
+    color: #5dade2;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+.insight-text {
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-panels {
+        flex-direction: column;
+    }
+    
+    .chat-section,
+    .insights-section {
+        width: 100%;
+        height: 50vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .chat-section,
+    .insights-section {
+        padding: 1rem;
+    }
+    
+    .chat-title {
+        font-size: 1.5rem;
+    }
+    
+    .insights-title {
+        font-size: 1.5rem;
+    }
+    
+    .user-message,
+    .bot-message {
+        max-width: 95%;
+    }
+}
+
+/* Loading States */
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    color: #bdc3c7;
+}
+
+/* Scrollbar Styling */
+.chat-messages-container::-webkit-scrollbar,
+.insights-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages-container::-webkit-scrollbar-track,
+.insights-section::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb,
+.insights-section::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb:hover,
+.insights-section::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Tables */
+.dash-table-container {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 0.5rem !important;
+}
+
+.dash-table-container .dash-spreadsheet-container {
+    background-color: transparent !important;
+}
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner {
+    background-color: transparent !important;
+}
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner table {
+    background-color: transparent !important;
+    color: white !important;
+}
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner table th {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner table td {
+    background-color: transparent !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Charts */
+.js-plotly-plot {
+    background-color: transparent !important;
+}
+
+.js-plotly-plot .plotly .modebar {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dataset Selection Styling */
+.dataset-selection-container {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dataset-label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+    display: block;
+}
+
+.dataset-selection-container .Select-control {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+.dataset-selection-container .Select-placeholder {
+    color: #bdc3c7 !important;
+}
+
+.dataset-selection-container .Select-input input {
+    color: white !important;
+}
+
+.dataset-selection-container .Select-value-label {
+    color: white !important;
+}
+
+.dataset-load-status {
+    color: #bdc3c7;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Dropdown Styling for Dash Components */
+.dataset-selection-container .dash-dropdown {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    min-width: 300px;
+    width: 100%;
+}
+
+.dataset-selection-container .dash-dropdown .Select-control {
+    background-color: transparent !important;
+    border: none !important;
+    min-height: 40px;
+    width: 100%;
+}
+
+.dataset-selection-container .dash-dropdown .Select-placeholder {
+    color: #bdc3c7 !important;
+}
+
+.dataset-selection-container .dash-dropdown .Select-value {
+    color: white !important;
+}
+
+.dataset-selection-container .dash-dropdown .Select-single-value {
+    color: white !important;
+}
+
+/* Ensure the input group takes full width */
+.dataset-selection-container .input-group {
+    width: 100%;
+}
+
+.dataset-selection-container .input-group .dash-dropdown {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Button styling in dataset selection */
+.dataset-selection-container .btn-outline-secondary {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dataset-selection-container .btn-outline-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+}
+
+/* Dropdown menu styling */
+.dataset-selection-container .dash-dropdown .Select-menu-outer {
+    background-color: #2c3e50 !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 0.5rem !important;
+    z-index: 9999 !important;
+}
+
+.dataset-selection-container .dash-dropdown .Select-menu {
+    background-color: #2c3e50 !important;
+    border-radius: 0.5rem !important;
+}
+
+.dataset-selection-container .dash-dropdown .Select-option {
+    background-color: transparent !important;
+    color: white !important;
+    padding: 8px 12px !important;
+}
+
+.dataset-selection-container .dash-dropdown .Select-option:hover {
+    background-color: rgba(93, 173, 226, 0.3) !important;
+    color: white !important;
+}
+
+.dataset-selection-container .dash-dropdown .Select-option.is-focused {
+    background-color: rgba(93, 173, 226, 0.2) !important;
+    color: white !important;
+}
+
+.dataset-selection-container .dash-dropdown .Select-option.is-selected {
+    background-color: #5dade2 !important;
+    color: white !important;
+}

@@ -166,12 +166,12 @@ This application is containerized and can be deployed to Google Cloud Run.
 1.  **Set Environment Variables (Shell):**
     Replace placeholders with your actual values.
     ```bash
-    export PROJECT_ID="your-project-id"
-    export REGION="your-region" # e.g., us-central1
-    export REPO_NAME="your-repo-name" # e.g., data-agent-platform-repo
+    export PROJECT_ID="dataagentplatform"
+    export REGION="europe-west4" # e.g., us-central1
+    export REPO_NAME="data-agent-platform-repo" # e.g., data-agent-platform-repo
     export IMAGE_NAME="data-agent-platform" # Or your preferred image name
     export IMAGE_TAG="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest"
-    export SERVICE_ACCOUNT_EMAIL="your-service-account-email@${PROJECT_ID}.iam.gserviceaccount.com"
+    export SERVICE_ACCOUNT_EMAIL="data-agent-platform-service-ac@${PROJECT_ID}.iam.gserviceaccount.com"
     # Ensure this service account has roles like BigQuery Admin, Vertex AI User, Storage Object Admin.
     ```
 

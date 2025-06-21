@@ -1,0 +1,623 @@
+/* Component styles for the Data Agent Platform */
+
+/* ======================
+   Chat Components
+   ====================== */
+
+/* Message Styling */
+.message {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-lg);
+    max-width: 85%;
+    position: relative;
+    word-wrap: break-word;
+    transition: all var(--transition-speed) var(--transition-timing);
+    animation: fadeInSlideUp 0.3s ease-out forwards;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+/* Assistant Message */
+.assistant-message {
+    background-color: var(--card-bg);
+    color: var(--dark-text);
+    align-self: flex-start;
+    border-radius: 0 1.125rem 1.125rem 1.125rem;
+    margin-right: auto;
+    margin-left: 0;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* User Message */
+.user-message {
+    background-color: var(--primary-color);
+    color: white;
+    align-self: flex-end;
+    border-radius: 1.125rem 0 1.125rem 1.125rem;
+    margin-left: auto;
+    margin-right: 0;
+    border: none;
+    box-shadow: 0 2px 10px rgba(67, 97, 238, 0.2);
+}
+
+/* Message Meta (time, status) */
+.message-meta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--light-text);
+    margin-top: 0.25rem;
+    opacity: 0.8;
+}
+
+/* Message Status Icons */
+.message-status {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Message Timestamp */
+.message-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* ======================
+   Form Elements
+   ====================== */
+
+/* Input Groups */
+.input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--dark-text);
+    text-align: center;
+    white-space: nowrap;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+/* Form Controls */
+.form-control {
+    position: relative;
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--dark-text);
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    color: var(--dark-text);
+    background-color: #fff;
+    border-color: var(--primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+}
+
+/* ======================
+   Buttons & Interactive
+   ====================== */
+
+/* Button Groups */
+.btn-group {
+    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.btn-group > .btn {
+    position: relative;
+    flex: 1 1 auto;
+    border-radius: 0;
+}
+
+.btn-group > .btn:first-child {
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+}
+
+.btn-group > .btn:last-child {
+    border-top-right-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: var(--radius-full);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.badge-primary {
+    color: #fff;
+    background-color: var(--primary-color);
+}
+
+.badge-secondary {
+    color: #fff;
+    background-color: var(--secondary-color);
+}
+
+/* ======================
+   Loading States
+   ====================== */
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 0.25rem solid rgba(67, 97, 238, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ======================
+   Dark Mode Overrides
+   ====================== */
+
+.dark-mode .assistant-message {
+    background-color: var(--card-bg);
+    color: var(--light-text);
+    border-color: var(--border-color);
+}
+
+.dark-mode .user-message {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.dark-mode .form-control {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--light-text);
+}
+
+.dark-mode .form-control:focus {
+    background-color: var(--card-bg);
+    color: var(--light-text);
+}
+
+/* ======================
+   Responsive Adjustments
+   ====================== */
+
+@media (max-width: 768px) {
+    .message {
+        max-width: 90%;
+        font-size: 0.9375rem;
+    }
+    
+    .message-meta {
+        font-size: 0.6875rem;
+    }
+}
+
+.message-content { /* Style the inner content div */
+     line-height: 1.5;
+     padding-bottom: 1.5rem; /* Space for timestamp */
+}
+
+.message-timestamp {
+    font-size: 0.65rem;
+    opacity: 0.55;
+    position: absolute;
+    bottom: 0.35rem;
+    right: 1.1rem;
+    letter-spacing: 0.03em;
+    font-style: italic;
+    pointer-events: none;
+}
+
+/* Chat Input Area */
+.chat-input-area { /* Renamed from .chat-input */
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border-color); /* Default border */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Space between input and button */
+    transition: border-color var(--transition-speed);
+}
+/* Theme-specific border */
+.app-container.dark-mode .chat-input-area {
+    border-top-color: var(--border-color);
+}
+.app-container.light-mode .chat-input-area {
+    border-top-color: var(--light-border-color);
+}
+
+/* Input Field Styling (using dbc class .chat-input) */
+.chat-input {
+    flex: 1;
+    border-radius: 1.5rem !important; /* Use !important if needed */
+    border: 1px solid var(--border-color) !important;
+    padding: 0.6rem 1rem !important;
+    resize: none;
+    min-height: 40px !important; /* Fixed height */
+    line-height: 1.4;
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}
+/* Theme-specific input field */
+.app-container.dark-mode .chat-input {
+    background-color: var(--card-bg) !important;
+    color: var(--light-text) !important;
+    border-color: var(--border-color) !important;
+}
+.app-container.light-mode .chat-input {
+    background-color: var(--light-card-bg) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--light-border-color) !important;
+}
+.app-container.dark-mode .chat-input:focus {
+    outline: none !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(98, 198, 217, 0.3); /* Subtle focus glow */
+}
+.app-container.light-mode .chat-input:focus {
+    outline: none !important;
+    border-color: var(--light-primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(90, 155, 213, 0.3); /* Subtle focus glow */
+}
+
+/* Send Button Styling (using dbc class .send-button) */
+.send-button {
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important; /* Remove default padding */
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+/* Theme-specific send button */
+.app-container.dark-mode .send-button {
+    background-color: var(--primary-color) !important;
+    color: var(--light-text) !important;
+}
+.app-container.light-mode .send-button {
+    background-color: var(--light-primary-color) !important;
+    color: var(--light-text) !important;
+}
+.app-container.dark-mode .send-button:hover {
+    background-color: var(--accent-color) !important;
+}
+.app-container.light-mode .send-button:hover {
+    background-color: var(--light-accent-color) !important;
+}
+
+/* Loading Spinner */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    height: 30px; /* Fixed height to prevent layout shifts */
+}
+.loading-spinner {
+    opacity: 1; /* Increased opacity for better visibility */
+    transform: scale(1.2); /* Make spinner slightly larger */
+}
+
+.loading-spinner > div {
+    animation: pulse 1.5s infinite ease-in-out; /* Apply pulsing animation */
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Theme Toggle Button */
+.theme-toggle-button {
+    border-radius: 50% !important; /* Ensure it's round */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}
+.app-container.dark-mode .theme-toggle-button {
+    border-color: var(--border-color) !important;
+}
+.app-container.light-mode .theme-toggle-button {
+    border-color: var(--light-border-color) !important;
+}
+.app-container.dark-mode .theme-toggle-button:hover {
+    background-color: var(--hover-color) !important;
+}
+.app-container.light-mode .theme-toggle-button:hover {
+    background-color: var(--light-hover-color) !important;
+}
+
+/* Suggestion Area */
+.suggestion-section { /* Renamed from .suggestion-area */
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border-color); /* Default border */
+    transition: border-color var(--transition-speed);
+}
+.app-container.dark-mode .suggestion-section {
+    border-top-color: var(--border-color);
+}
+.app-container.light-mode .suggestion-section {
+    border-top-color: var(--light-border-color);
+}
+
+.suggestion-title { /* Renamed from .suggestions-title */
+    font-size: 0.8rem;
+    font-weight: 500; /* Slightly bolder */
+    margin-bottom: 0.75rem;
+    opacity: 0.8; /* Subtle text */
+}
+
+.suggestion-pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.suggestion-pill {
+    font-size: 0.9rem !important;
+    border-radius: 1.25rem !important;
+    padding: 0.38rem 1.1rem !important;
+    transition: all 0.18s cubic-bezier(.4,0,.2,1);
+    background-color: var(--card-bg);
+    color: var(--primary-color);
+    border: 1.5px solid var(--primary-color);
+    cursor: pointer;
+    margin-bottom: 0.3rem;
+    margin-right: 0.3rem;
+    box-shadow: 0 2px 8px 0 rgba(98,198,217,0.09);
+    display: inline-block;
+    font-weight: 500;
+    outline: none;
+    -webkit-user-select: none; /* For Safari */
+    user-select: none;
+    animation: fadeInSlideUp 0.35s;
+}
+.suggestion-pill:hover, .suggestion-pill:focus {
+    background-color: var(--primary-color);
+    color: #fff !important;
+    border-color: var(--primary-color);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 12px 0 rgba(98,198,217,0.13);
+}
+
+.app-container.light-mode .suggestion-pill {
+    background-color: var(--light-card-bg) !important;
+    border: 1px solid var(--light-border-color) !important;
+    color: var(--dark-text) !important;
+}
+.app-container.light-mode .suggestion-pill:hover {
+    background-color: var(--light-hover-color) !important;
+    border-color: var(--light-hover-color) !important;
+    transform: translateY(-1px);
+}
+
+/* Key Insights Section */
+.key-insights-fixed-section {
+    padding: 1rem;
+    z-index: 10;
+    background-color: var(--card-bg); /* Match card background */
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+    /* Add a clear visual separator */
+    position: relative; /* For the separator */
+}
+/* Add a clear visual separator line before the key insights section */
+.key-insights-fixed-section::before {
+    content: '';
+    position: absolute;
+    top: -1px; /* Position it at the top of the section */
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--border-color); /* Use border color for the line */
+    z-index: 11; /* Above the section itself */
+}
+
+/* Theme-specific styling for key insights section */
+.app-container.dark-mode .key-insights-fixed-section {
+    background-color: var(--dark-bg); /* Use darker background for better contrast */
+    border-top-color: var(--primary-color);
+}
+.app-container.light-mode .key-insights-fixed-section {
+    background-color: var(--light-bg); /* Use lighter background for better contrast */
+    border-top-color: var(--light-primary-color);
+}
+.app-container.dark-mode .key-insights-fixed-section::before {
+    background-color: var(--border-color);
+}
+.app-container.light-mode .key-insights-fixed-section::before {
+    background-color: var(--light-border-color);
+}
+
+.key-insights-title {
+    font-size: 1.1rem; /* Slightly larger */
+    font-weight: 600;
+    margin-bottom: 0.75rem; /* Reduced margin for fixed section */
+    transition: color var(--transition-speed);
+    display: flex;
+    align-items: center;
+}
+
+/* Style for the key insights content in the fixed section */
+.key-insights-content {
+    max-height: 120px; /* Allow some space for scrolling */
+    overflow-y: auto; /* Enable scrolling if content is too long */
+}
+
+/* Style for the horizontal separator in key insights */
+.key-insights-separator {
+    border: none;
+    height: 2px;
+    background-color: var(--border-color);
+    margin: 0 0 0.75rem 0;
+    opacity: 0.7;
+}
+
+/* Theme-specific styling for the separator */
+.app-container.dark-mode .key-insights-separator {
+    background-color: var(--border-color);
+}
+.app-container.light-mode .key-insights-separator {
+    background-color: var(--light-border-color);
+}
+.app-container.dark-mode .key-insights-title {
+    color: var(--light-text);
+}
+.app-container.light-mode .key-insights-title {
+    color: var(--dark-text);
+}
+
+.insight-item {
+    margin-bottom: 0.5rem; /* Reduced margin for fixed section */
+    display: flex;
+    align-items: flex-start;
+    font-size: 0.85rem; /* Slightly smaller for fixed section */
+}
+
+.insight-icon {
+    margin-right: 0.75rem; /* Increased spacing */
+    margin-top: 0.15rem; /* Align icon better */
+    transition: color var(--transition-speed);
+}
+.app-container.dark-mode .insight-icon {
+    color: var(--primary-color);
+}
+.app-container.light-mode .insight-icon {
+    color: var(--light-primary-color);
+}
+
+.insight-text {
+    line-height: 1.6; /* Improved readability */
+}
+
+/* Empty State Styling */
+.empty-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    padding: 2rem;
+    border-radius: 8px;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+.app-container.dark-mode .empty-state-container {
+    background-color: var(--card-bg);
+    border: 1px dashed var(--border-color);
+}
+.app-container.light-mode .empty-state-container {
+    background-color: var(--light-card-bg);
+    border: 1px dashed var(--light-border-color);
+}
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+.empty-state-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    transition: color var(--transition-speed);
+}
+.app-container.dark-mode .empty-state-title {
+    color: var(--primary-color);
+}
+.app-container.light-mode .empty-state-title {
+    color: var(--light-primary-color);
+}
+.empty-state-text {
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+/* Error Message Styling */
+.error-bubble {
+    background-color: rgba(207, 102, 121, 0.1);
+    border-left: 4px solid #cf6679;
+}
+
+.app-container.light-mode .error-bubble {
+    background-color: rgba(176, 0, 32, 0.08);
+    border-left-color: #b00020;
+}
+
+.error-message {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.error-details summary {
+    cursor: pointer;
+    font-weight: 500;
+    opacity: 0.8;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.error-details summary:hover {
+    opacity: 1;
+}
+
+.error-details p {
+    background-color: rgba(0,0,0,0.1);
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    font-family: 'Courier New', Courier, monospace;
+}

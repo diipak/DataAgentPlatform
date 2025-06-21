@@ -220,3 +220,277 @@ def register_callbacks(app):
         if n_clicks_clear:
             return ""
         raise PreventUpdate
+
+    # New chat interface callbacks with real agent integration
+    @app.callback(
+        [Output('chat-messages', 'children'),
+         Output('main-visualization', 'children'),
+         Output('data-table', 'children'),
+         Output('key-insights', 'children'),
+         Output('chat-input', 'value')],
+        [Input('send-button', 'n_clicks'),
+         Input('chat-input', 'n_submit'),
+         Input('suggestion-1', 'n_clicks'),
+         Input('suggestion-2', 'n_clicks'),
+         Input('suggestion-3', 'n_clicks'),
+         Input('suggestion-4', 'n_clicks')],
+        [State('chat-input', 'value'),
+         State('store-chat-messages', 'data'),
+         State('dataset-dropdown', 'value')],
+        prevent_initial_call=True
+    )
+    def handle_chat_interaction(send_clicks, input_submit, sugg1_clicks, sugg2_clicks, sugg3_clicks, sugg4_clicks, 
+                               input_value, chat_history, selected_dataset):
+        import plotly.graph_objects as go
+        from dash import dash_table
+        import pandas as pd
+        from datetime import datetime
+        
+        ctx = callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        
+        # Determine the message based on trigger
+        message = ""
+        if trigger_id == 'suggestion-1':
+            message = "What is the total number of records in this dataset?"
+        elif trigger_id == 'suggestion-2':
+            message = "Show me the first 10 rows of data"
+        elif trigger_id == 'suggestion-3':
+            message = "What columns are available in this dataset?"
+        elif trigger_id == 'suggestion-4':
+            message = "Show me a summary of the data"
+        elif trigger_id in ['send-button', 'chat-input']:
+            message = input_value
+        
+        if not message:
+            raise PreventUpdate
+        
+        # Initialize chat history if None
+        if not chat_history:
+            chat_history = []
+        
+        # Add user message
+        chat_history.append({
+            'type': 'user',
+            'content': message,
+            'timestamp': datetime.now().strftime('%H:%M')
+        })
+        
+        # Process with real agents if PROJECT_ID is available and dataset is selected
+        bot_response = ""
+        visualization = html.Div("No visualization available", className="text-muted")
+        data_table = html.Div("No data available", className="text-muted")
+        insights_elements = []
+        
+        try:
+            if PROJECT_ID and selected_dataset:
+                logger.info(f"Processing query with agents: '{message}' for dataset: {selected_dataset}")
+                
+                # Use DataAnalystAgent to process the query
+                try:
+                    data_analyst = DataAnalystAgent(project_id=PROJECT_ID)
+                    logger.info(f"DataAnalystAgent initialized successfully")
+                except Exception as agent_error:
+                    logger.error(f"Error initializing DataAnalystAgent: {agent_error}")
+                    bot_response = f"Sorry, I encountered an error initializing the data analysis service."
+                    
+                if 'data_analyst' in locals() and data_analyst.schema_agent and data_analyst.bigquery_tool:
+                    # Get dataset schema
+                    dataset_schema = data_analyst.schema_agent.get_full_dataset_schema(selected_dataset)
+                    
+                    if not dataset_schema:
+                        bot_response = f"Could not retrieve schema for dataset: {selected_dataset}"
+                    else:
+                        # Get the first table from the dataset schema for processing
+                        first_table = list(dataset_schema.keys())[0] if dataset_schema else None
+                        if not first_table:
+                            bot_response = "No tables found in the selected dataset"
+                        else:
+                            # Construct full table reference: dataset.table
+                            full_table_ref = f"{selected_dataset}.{first_table}"
+                            
+                            # Process the query
+                            result = data_analyst.process(
+                                query=message,
+                                dataset_schema=dataset_schema,
+                                project_id=data_analyst.project_id,
+                                dataset_id=full_table_ref
+                            )
+                            
+                            if result.get('results_df') is not None and result.get('error') is None:
+                                df = result.get('results_df')
+                                bot_response = f"Analysis complete! Found {len(df)} results."
+                                
+                                # Create visualization from real data
+                                if df is not None and not df.empty and len(df.columns) >= 2:
+                                    fig = go.Figure()
+                                    fig.add_trace(go.Bar(
+                                        x=df.iloc[:, 0].head(10),
+                                        y=df.iloc[:, 1].head(10),
+                                        name=df.columns[1]
+                                    ))
+                                    fig.update_layout(
+                                        title=f"Analysis Results for: {message}",
+                                        xaxis_title=df.columns[0],
+                                        yaxis_title=df.columns[1],
+                                        plot_bgcolor='rgba(0,0,0,0)',
+                                        paper_bgcolor='rgba(0,0,0,0)',
+                                        font=dict(color='white'),
+                                        showlegend=False
+                                    )
+                                    visualization = dcc.Graph(figure=fig, config={'displayModeBar': False})
+                                
+                                # Create data table from real data
+                                data_table = dash_table.DataTable(
+                                    data=df.head(10).to_dict('records'),
+                                    columns=[{'name': col, 'id': col} for col in df.columns],
+                                    style_cell={'textAlign': 'left', 'backgroundColor': 'rgba(255,255,255,0.05)', 'color': 'white', 'border': '1px solid rgba(255,255,255,0.1)'},
+                                    style_header={'backgroundColor': 'rgba(255,255,255,0.1)', 'fontWeight': 'bold'},
+                                    style_data={'backgroundColor': 'transparent'},
+                                    page_size=10
+                                )
+                                
+                                # Generate insights
+                                insights_elements.append(
+                                    html.Div(className="insight-item", children=[
+                                        html.I(className="insight-bullet fas fa-chart-bar"),
+                                        html.Div(f"Query returned {len(df)} rows with {len(df.columns)} columns", className="insight-text")
+                                    ])
+                                )
+                            else:
+                                error_msg = result.get('error', 'Unknown error')
+                                sql_query = result.get('sql_query', 'N/A')
+                                bot_response = f"Sorry, I encountered an error processing your query: {error_msg}"
+                else:
+                    bot_response = "Agent services are not properly initialized. Please check configuration."
+            else:
+                bot_response = "Please select a dataset first to analyze your data."
+                
+        except Exception as e:
+            logger.error(f"Error in chat interaction: {e}")
+            bot_response = f"Sorry, I encountered an error: {str(e)}"
+        
+        # Add bot response to chat history
+        chat_history.append({
+            'type': 'bot',
+            'content': bot_response,
+            'timestamp': datetime.now().strftime('%H:%M')
+        })
+        
+        # Create chat messages elements
+        chat_elements = []
+        for msg in chat_history[-10:]:  # Show last 10 messages
+            if msg['type'] == 'user':
+                chat_elements.append(
+                    html.Div(className="user-message", children=[
+                        html.Div(msg['content']),
+                        html.Div(msg['timestamp'], className="message-timestamp")
+                    ])
+                )
+            else:
+                chat_elements.append(
+                    html.Div(className="bot-message", children=[
+                        html.Div(msg['content']),
+                        html.Div(msg['timestamp'], className="message-timestamp")
+                    ])
+                )
+        
+        return chat_elements, visualization, data_table, insights_elements, ""
+
+    # Store chat messages - synchronized with real agent callback
+    @app.callback(
+        Output('store-chat-messages', 'data'),
+        [Input('send-button', 'n_clicks'),
+         Input('chat-input', 'n_submit'),
+         Input('suggestion-1', 'n_clicks'),
+         Input('suggestion-2', 'n_clicks'),
+         Input('suggestion-3', 'n_clicks'),
+         Input('suggestion-4', 'n_clicks')],
+        [State('chat-input', 'value'),
+         State('store-chat-messages', 'data')],
+        prevent_initial_call=True
+    )
+    def update_chat_store(send_clicks, input_submit, sugg1_clicks, sugg2_clicks, sugg3_clicks, sugg4_clicks, 
+                         input_value, chat_history):
+        from datetime import datetime
+        
+        ctx = callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        
+        # Determine the message based on trigger
+        message = ""
+        if trigger_id == 'suggestion-1':
+            message = "What is the total number of records in this dataset?"
+        elif trigger_id == 'suggestion-2':
+            message = "Show me the first 10 rows of data"
+        elif trigger_id == 'suggestion-3':
+            message = "What columns are available in this dataset?"
+        elif trigger_id == 'suggestion-4':
+            message = "Show me a summary of the data"
+        elif trigger_id in ['send-button', 'chat-input']:
+            message = input_value
+        
+        if not message:
+            raise PreventUpdate
+        
+        # Initialize chat history if None
+        if not chat_history:
+            chat_history = []
+        
+        # Add user message - bot response will be added by the main callback
+        chat_history.append({
+            'type': 'user',
+            'content': message,
+            'timestamp': datetime.now().strftime('%H:%M')
+        })
+        
+        return chat_history
+    
+    # New visible dataset dropdown callbacks
+    @app.callback(
+        [Output('dataset-dropdown-visible', 'options'),
+         Output('dataset-dropdown-visible', 'value'),
+         Output('dataset-load-status-visible', 'children')],
+        [Input('load-datasets-button-visible', 'n_clicks')],
+        prevent_initial_call=True
+    )
+    def load_datasets_visible(n_clicks):
+        if not n_clicks:
+            raise PreventUpdate
+        
+        if not PROJECT_ID:
+            return [], None, "Error: GOOGLE_CLOUD_PROJECT not configured."
+        
+        try:
+            logger.info("Loading datasets for visible dropdown")
+            schema_agent = SchemaAgent(project_id=PROJECT_ID)
+            if not schema_agent.connector:
+                return [], None, "Error: Failed to connect to BigQuery."
+            
+            datasets = schema_agent.get_available_datasets()
+            if not datasets:
+                return [], None, "No datasets found."
+            
+            options = [{'label': ds_id, 'value': ds_id} for ds_id in datasets]
+            default_value = options[0]['value'] if options else None
+            logger.info(f"Loaded {len(datasets)} datasets for visible dropdown.")
+            return options, default_value, f"Successfully loaded {len(datasets)} datasets."
+            
+        except Exception as e:
+            logger.error(f"Error loading datasets for visible dropdown: {e}")
+            return [], None, f"Error loading datasets: {str(e)}"
+    
+    # Sync the visible dropdown with the hidden one used by other callbacks
+    @app.callback(
+        Output('dataset-dropdown', 'value', allow_duplicate=True),
+        [Input('dataset-dropdown-visible', 'value')],
+        prevent_initial_call=True
+    )
+    def sync_dataset_selection(visible_value):
+        return visible_value

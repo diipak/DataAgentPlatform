@@ -1,103 +1,162 @@
 import dash
 from dash import html, dcc
 import dash_bootstrap_components as dbc
+from layouts.chat_panel import create_chat_panel
+from layouts.visualization_panel import create_visualization_panel
 
 def create_layout():
-    return dbc.Container([
-        dcc.Store(id='store-generated-sql'), # Added dcc.Store here
-        # Header
-        dbc.Row([
-            dbc.Col(html.H1("Dynamic Data Agent Platform", className="text-center mb-4"), width=12)
-        ]),
-
-        # Global Error Alert Row
-        dbc.Row([
-            dbc.Col(
-                dbc.Alert(
-                    id="global-error-alert",
-                    is_open=False,
-                    dismissable=True,
-                    duration=4000,
-                    color="danger"
-                ),
-                width=12
-            )
-        ], className="mb-3"),
-
-        # Main Content Row
-        dbc.Row([
-            # Left Panel - Dataset Selection & Query Input
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardHeader("Dataset & Query Input"), # Combined Header
-                    dbc.CardBody([
-                        html.Label("Select BigQuery Dataset:"),
-                        dcc.Dropdown(
-                            id='dataset-dropdown',
-                            placeholder="Load datasets first...",
-                        ),
-                        dbc.Button("Load/Refresh Datasets", id="load-datasets-button", color="info", className="mt-2 mb-3"), # Added mb-3 for spacing
-                        dcc.Loading(
-                            id="loading-datasets",
-                            type="default",
-                            children=html.Div(id="dataset-load-status")
-                        ),
-                        html.Hr(), # Separator
-                        html.Label("Enter your natural language query:"), # Clarifying label
-                        dbc.Textarea(
-                            id="query-input",
-                            placeholder="e.g., 'What are the most common words in Shakespeare's works?'",
-                            className="mb-3",
-                            style={"height": "150px"} # Adjusted height
-                        ),
-                        dbc.Button("Submit Query", id="submit-button", color="primary", className="me-1"),
-                        dbc.Button("Clear", id="clear-button", color="secondary")
+    return html.Div(className="app-container dark-theme", children=[
+        # Store components
+        dcc.Store(id='store-generated-sql'),
+        dcc.Store(id='store-chat-messages', data=[]),
+        dcc.Store(id='store-current-data', data={}),
+        
+        # Two-panel layout
+        html.Div(className="main-panels", children=[
+            # Left Panel - Chat Interface
+            html.Div(className="chat-section", children=[
+                # Chat Header
+                html.Div(className="chat-header", children=[
+                    html.Div(className="chat-title-container", children=[
+                        html.I(className="fas fa-robot chat-icon"),
+                        html.Div(children=[
+                            html.H2("Data Agent Chatbot", className="chat-title"),
+                            html.P("Ask questions about your data", className="chat-subtitle")
+                        ])
                     ])
-                ])
-            ], width=4),
-            
-            # Right Panel - Query Results & Visualizations
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardHeader("Query Results"), # Original Header
-                    dbc.CardBody([
-                        dcc.Loading(
-                            id="loading-results",
-                            type="default", # Ensure type is set
-                            children=[
-                                html.H5("Generated SQL Query:"), # More descriptive
-                                dcc.Markdown(id="sql-query-display"),
-                                html.Div([ # Wrapper for feedback elements
-                                    dbc.Button(html.I(className="fas fa-thumbs-up"), id="sql-feedback-up-button", color="success", size="sm", className="me-1"),
-                                    dbc.Button(html.I(className="fas fa-thumbs-down"), id="sql-feedback-down-button", color="danger", size="sm"),
-                                    html.Div(id="sql-feedback-status", className="ms-2 d-inline-block", style={'fontSize': '0.9em'}) # For "Thanks" message
-                                ], className="mt-2 mb-2"), # Add some margin
-                                html.Hr(), # Separator before results table
-                                html.H5("Query Results Data:"), # More descriptive
-                                html.Div(id="query-results-table"),
-                                html.Hr(), # Separator
-                                html.H5("Visualizations:"),
-                                html.Div(id="charts-display-area")
-                            ]
+                ]),
+                
+                # Chat Messages Area
+                html.Div(className="chat-messages-container", children=[
+                    # Welcome message
+                    html.Div(className="welcome-message", children=[
+                        "Welcome to the Data Agent Platform! Ask me anything about your data."
+                    ]),
+                    
+                    # Chat messages will be added here dynamically
+                    html.Div(id="chat-messages", className="chat-messages"),
+                ]),
+                
+                # Suggested Questions
+                html.Div(className="suggestions-container", children=[
+                    html.P("Suggested Questions:", className="suggestions-title"),
+                    html.Div(className="suggestion-buttons", children=[
+                        dbc.Button("What is the total number of records in this dataset?", 
+                                 id="suggestion-1", className="suggestion-btn", color="outline-light", size="sm"),
+                        dbc.Button("Show me the first 10 rows of data", 
+                                 id="suggestion-2", className="suggestion-btn", color="outline-light", size="sm"),
+                        dbc.Button("What columns are available in this dataset?", 
+                                 id="suggestion-3", className="suggestion-btn", color="outline-light", size="sm"),
+                        dbc.Button("Show me a summary of the data", 
+                                 id="suggestion-4", className="suggestion-btn", color="outline-light", size="sm"),
+                    ])
+                ]),
+                
+                # Chat Input Area
+                html.Div(className="chat-input-container", children=[
+                    dbc.InputGroup(children=[
+                        dbc.Input(
+                            id="chat-input",
+                            placeholder="Type your message...",
+                            className="chat-input"
+                        ),
+                        dbc.Button(
+                            html.I(className="fas fa-paper-plane"),
+                            id="send-button",
+                            color="primary",
+                            className="send-button"
                         )
                     ])
                 ])
-            ], width=8)
+            ]),
+            
+            # Right Panel - Data Insights
+            html.Div(className="insights-section", children=[
+                # Insights Header
+                html.Div(className="insights-header", children=[
+                    html.Div(className="insights-title-container", children=[
+                        html.H2("Data Insights", className="insights-title"),
+                        html.P("Visualizations and analysis from your queries", className="insights-subtitle")
+                    ]),
+                    # Theme toggle button
+                    dbc.Button(
+                        html.I(className="fas fa-moon"),
+                        id="theme-toggle",
+                        color="outline-light",
+                        size="sm",
+                        className="theme-toggle"
+                    )
+                ]),
+                
+                # Dataset Selection
+                html.Div(className="dataset-selection-container", children=[
+                    html.Label("Select BigQuery Dataset", className="dataset-label"),
+                    html.Div(className="d-flex align-items-center gap-2", children=[
+                        dcc.Dropdown(
+                            id='dataset-dropdown-visible',
+                            placeholder="Select a dataset...",
+                            className="flex-grow-1",
+                            style={"minWidth": "300px"}
+                        ),
+                        dbc.Button(
+                            html.I(className="fas fa-sync-alt"),
+                            id="load-datasets-button-visible",
+                            color="outline-secondary",
+                            size="sm"
+                        )
+                    ]),
+                    dcc.Loading(
+                        id="loading-datasets-visible",
+                        type="default",
+                        children=html.Div(id="dataset-load-status-visible", className="mt-2 dataset-load-status")
+                    ),
+                ]),
+                
+                # Main Visualization Area
+                html.Div(className="visualization-area", children=[
+                    dcc.Loading(
+                        id="loading-visualization",
+                        type="default",
+                        children=html.Div(id="main-visualization", className="main-chart")
+                    )
+                ]),
+                
+                # Data Table Section
+                html.Div(className="data-table-section", children=[
+                    html.H3("Data Table", className="section-title"),
+                    dcc.Loading(
+                        id="loading-table",
+                        type="default",
+                        children=html.Div(id="data-table", className="data-table-container")
+                    )
+                ]),
+                
+                # Key Insights Section
+                html.Div(className="key-insights-section", children=[
+                    html.Div(className="key-insights-header", children=[
+                        html.I(className="fas fa-lightbulb insight-icon"),
+                        html.H3("Key Insights", className="section-title")
+                    ]),
+                    html.Div(id="key-insights", className="insights-list")
+                ])
+            ])
         ]),
         
-        # Insights Panel
-        dbc.Row([
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardHeader("Insights"),
-                    dbc.CardBody([
-                        dcc.Loading(
-                            id="loading-insights",
-                            type="default",
-                            children=[html.Div(id="insights-display-area")]
-                        )
-                    ])
-                ])
-            ], width=12)
-        ], className="mt-3")
-    ], fluid=True)
+        # Hidden elements for compatibility
+        html.Div(style={"display": "none"}, children=[
+            dcc.Dropdown(id='dataset-dropdown'),
+            dbc.Button(id="load-datasets-button"),
+            html.Div(id="dataset-load-status"),
+            dbc.Textarea(id="query-input"),
+            dbc.Button(id="submit-button"),
+            dbc.Button(id="clear-button"),
+            html.Div(id="sql-query-display"),
+            html.Div(id="query-results-table"),
+            html.Div(id="charts-display-area"),
+            html.Div(id="insights-display-area"),
+            dbc.Button(id="sql-feedback-up-button"),
+            dbc.Button(id="sql-feedback-down-button"),
+            html.Span(id="sql-feedback-status"),
+            dbc.Alert(id="global-error-alert", is_open=False)
+        ])
+    ])
