@@ -230,4 +230,6 @@ This project was created specifically for the Google Cloud Agent Development Kit
 
 ## License
 
-MIT License
+Copyright (c) 2025 Deepak Batham. All Rights Reserved.
+
+See the `LICENSE` file for more details.
