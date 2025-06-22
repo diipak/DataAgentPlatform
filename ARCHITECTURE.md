@@ -1,82 +1,88 @@
-# System Architecture
+# Dynamic Data Agent Platform Architecture
 
 ## Visual Overview
 
 ```mermaid
-graph TD
-    %% Nodes
-    User[User]:::user
-    UI[Web Interface]:::ui
-    Orchestrator[Orchestrator]:::orchestrator
-    Schema[Schema Agent]:::agent
-    Analyst[Data Analyst Agent]:::agent
-    Visualizer[Visualization Agent]:::agent
-    BQ[BigQuery]:::gcp
-    AI[Vertex AI]:::gcp
+flowchart TD
+    User[User] --> WebUI[Web Interface<br/>Dash/Plotly]
+    WebUI --> ChatPanel[Chat Panel<br/>Natural Language Input]
+    WebUI --> VisualizationPanel[Visualization Panel<br/>Charts & Insights]
     
-    %% Connections
-    User --> |1. Query| UI
-    UI --> |2. Request| Orchestrator
+    ChatPanel --> DataAnalyst[Data Analyst Agent<br/>NL to SQL Conversion]
     
-    Orchestrator --> |3. Get Schema| Schema
-    Schema --> |4. Query| BQ
-    BQ --> |5. Return Schema| Schema
-    Schema --> |6. Schema| Analyst
+    DataAnalyst --> SchemaAgent[Schema Agent<br/>Dataset Metadata]
+    DataAnalyst --> VertexAI[Vertex AI<br/>Gemini Models]
     
-    Orchestrator --> |7. Process Query| Analyst
-    Analyst --> |8. Generate SQL| AI
-    AI --> |9. SQL| Analyst
-    Analyst --> |10. Execute| BQ
-    BQ --> |11. Results| Analyst
-    Analyst --> |12. Data| Visualizer
-    Visualizer --> |13. Visuals| Orchestrator
-    Orchestrator --> |14. Display| UI
+    SchemaAgent --> BigQuery[(BigQuery<br/>Data Storage)]
+    DataAnalyst --> BigQuery
     
-    %% Styling
-    classDef user fill:#e3f2fd,stroke:#333,stroke-width:2px
-    classDef ui fill:#fff9c4,stroke:#333,stroke-width:2px
-    classDef orchestrator fill:#f8bbd0,stroke:#333,stroke-width:2px
-    classDef agent fill:#c8e6c9,stroke:#333,stroke-width:2px
-    classDef gcp fill:#d1c4e9,stroke:#333,stroke-width:2px
+    BigQuery --> VisualizationAgent[Visualization Agent<br/>Chart Generation]
+    VisualizationAgent --> VisualizationPanel
+    
+    style User fill:#e3f2fd
+    style WebUI fill:#fff9c4
+    style ChatPanel fill:#f1f8e9
+    style VisualizationPanel fill:#f1f8e9
+    style DataAnalyst fill:#c8e6c9
+    style SchemaAgent fill:#c8e6c9
+    style VisualizationAgent fill:#c8e6c9
+    style VertexAI fill:#d1c4e9
+    style BigQuery fill:#d1c4e9
 ```
 
 ## Architecture Flow
 
 ### 1. User Interaction
-- User accesses the web interface
-- Selects a dataset and enters a natural language query
+- User accesses the Dash web interface (app.py)
+- Interacts with chat panel to enter natural language queries about BigQuery datasets
+- Can select specific BigQuery datasets from dropdown menu
 
-### 2. Request Handling
-- Web interface sends the request to the Orchestrator
+### 2. Chat Processing
+- Chat panel captures user input and suggestion clicks
+- Main callbacks (main_callbacks.py) handle chat interactions and coordinate agent responses
+- Loading indicators provide feedback during processing
 
-### 3. Schema Retrieval
-- Orchestrator requests schema information from Schema Agent
-- Schema Agent queries BigQuery for the dataset structure
-- Schema is returned and passed to Data Analyst Agent
+### 3. Data Analysis Flow
+- **Data Analyst Agent** receives natural language query and dataset information
+- **Schema Agent** retrieves BigQuery dataset schema and metadata
+- **Data Analyst Agent** uses Vertex AI (Gemini models) to convert natural language to SQL
+- Generated SQL is executed against BigQuery using BigQuery connector
+- Query results are processed and formatted
 
-### 4. Query Processing
-- Data Analyst Agent uses Vertex AI to convert natural language to SQL
-- SQL is executed on BigQuery
-- Query results are returned to the Data Analyst Agent
+### 4. Visualization Generation
+- **Visualization Agent** processes query results to create appropriate charts
+- Key insights are extracted and formatted for display
+- Charts and data tables are rendered in the visualization panel
 
-### 5. Visualization
-- Results are sent to Visualization Agent
-- Charts and insights are generated
-- Final output is returned to the web interface
+### 5. Response Display
+- Processed results, visualizations, and insights are displayed in the right panel
+- Chat history maintains conversation context
+- Theme toggle allows switching between light/dark modes
 
 ## Technical Components
 
-### Frontend
-- **Web Interface**: Built with Dash/Plotly for interactive visualizations
+### Frontend (Dash/Plotly)
+- **Main Layout** (`layouts/main_layout.py`): Two-panel layout with chat and visualization areas
+- **Chat Panel** (`layouts/chat_panel.py`): Natural language input interface
+- **Visualization Panel** (`layouts/visualization_panel.py`): Charts, tables, and insights display
+- **Constants** (`constants.py`): Component IDs and configuration
 
-### Backend Services
-- **Orchestrator**: Manages workflow between components
-- **Schema Agent**: Handles dataset metadata and structure
-- **Data Analyst Agent**: Processes natural language queries
-- **Visualization Agent**: Generates charts and insights
+### Backend Agents
+- **Data Analyst Agent** (`agents/data_analyst_agent.py`): Natural language to SQL conversion and query execution
+- **Schema Agent** (`agents/schema_agent.py`): BigQuery dataset metadata retrieval
+- **Visualization Agent** (`agents/visualization_agent.py`): Chart generation and data visualization
 
-### Cloud Services
-- **Google BigQuery**: Data storage and query execution
-- **Vertex AI**: Natural language processing and SQL generation
+### Cloud Services Integration
+- **Google BigQuery**: Data storage and SQL query execution via BigQuery connector
+- **Vertex AI**: Gemini models for natural language processing and SQL generation
+- **BigQuery Tools** (`adk_tools/bigquery_tool.py`): ADK-based tools for BigQuery operations
 
-This architecture ensures a smooth flow from user query to data visualization while maintaining clear separation of concerns between components.
+### Key Features
+- Real-time natural language to SQL conversion
+- Interactive chat interface with suggested queries
+- Dynamic visualization generation based on query results
+- Multi-dataset support with schema-aware querying
+- Dark/light theme support
+- Error handling and fallback mechanisms
+
+This architecture provides an AI-powered data analysis platform where users can interact with BigQuery datasets using natural language, with intelligent agents handling the complex tasks of SQL generation, data retrieval, and visualization creation.
