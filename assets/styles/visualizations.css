@@ -405,9 +405,10 @@
 
 /* Add theme-specific hover effect for table rows */
 .app-container.dark-mode .data-table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important; /* Slightly lighter hover */
-    color: var(--light-text);
+    background-color: var(--hover-bg) !important; /* A dark-theme-friendly color */
+    color: var(--light-text) !important;
 }
+
 .app-container.light-mode .data-table tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.05) !important; /* Slightly darker hover */
     color: var(--dark-text);

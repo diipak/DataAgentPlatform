@@ -8,6 +8,7 @@ from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
 
 from agents import SchemaAgent, DataAnalystAgent, VisualizationAgent
+from utils.question_generator import get_intelligent_questions
 
 logger = logging.getLogger(__name__)
 
@@ -708,3 +709,91 @@ The visualization and detailed insights are shown on the right panel. Feel free 
     )
     def sync_dataset_selection(visible_value):
         return visible_value
+    
+    # Intelligent Analytics Questions Generator
+    @app.callback(
+        Output('suggestion-buttons-container', 'children'),
+        [Input('dataset-dropdown-visible', 'value')],
+        prevent_initial_call=False
+    )
+    def update_intelligent_questions(selected_dataset):
+        import dash_bootstrap_components as dbc
+        
+        try:
+            logger.info(f"UPDATE_INTELLIGENT_QUESTIONS CALLED: selected_dataset={selected_dataset}")
+            
+            # Get schema information if dataset is selected
+            schema_info = None
+            if selected_dataset and PROJECT_ID:
+                logger.info(f"Attempting to get schema for dataset: {selected_dataset}")
+                try:
+                    schema_agent = SchemaAgent(project_id=PROJECT_ID)
+                    if schema_agent.connector:
+                        dataset_schema = schema_agent.get_full_dataset_schema(selected_dataset)
+                        if dataset_schema:
+                            # Convert schema to simplified format for question generator
+                            all_columns = []
+                            for table_name, table_schema in dataset_schema.items():
+                                all_columns.extend([col['name'] for col in table_schema])
+                            schema_info = {'columns': all_columns}
+                            logger.info(f"Generated schema info for questions: {len(all_columns)} columns - {all_columns[:5]}...")
+                        else:
+                            logger.warning("Dataset schema was empty or None")
+                    else:
+                        logger.warning("Schema agent connector is None")
+                except Exception as e:
+                    logger.warning(f"Could not get schema for intelligent questions: {e}")
+            else:
+                logger.info(f"No dataset selected or PROJECT_ID missing. Dataset: {selected_dataset}, PROJECT_ID: {PROJECT_ID}")
+            
+            # Generate intelligent questions
+            questions = get_intelligent_questions(
+                dataset_name=selected_dataset,
+                schema_info=schema_info
+            )
+            
+            logger.info(f"Generated intelligent questions: {questions}")
+            
+            # Create button components with dataset info for testing
+            buttons = []
+            if selected_dataset:
+                # Show dataset-specific questions
+                test_questions = [
+                    f"📊 Show trends for {selected_dataset}",
+                    f"📈 Analyze {selected_dataset} metrics",
+                    f"🔍 Find patterns in {selected_dataset}",
+                    f"📋 Summarize {selected_dataset} data"
+                ]
+                for i, question in enumerate(test_questions):
+                    buttons.append(
+                        dbc.Button(
+                            question,
+                            id=f'suggestion-{i+1}',
+                            color="secondary",
+                            className="suggestion-btn"
+                        )
+                    )
+            else:
+                # Use generated questions for no dataset selected
+                for i, question in enumerate(questions):
+                    buttons.append(
+                        dbc.Button(
+                            question,
+                            id=f'suggestion-{i+1}',
+                            color="secondary",
+                            className="suggestion-btn"
+                        )
+                    )
+            
+            logger.info(f"Returning {len(buttons)} buttons")
+            return buttons
+            
+        except Exception as e:
+            logger.error(f"Error generating intelligent questions: {e}")
+            # Fallback to default questions
+            return [
+                dbc.Button("📊 Show me the main trends", id='suggestion-1', color="secondary", className="suggestion-btn"),
+                dbc.Button("📈 What are the key metrics?", id='suggestion-2', color="secondary", className="suggestion-btn"),
+                dbc.Button("🌍 Summarize the dataset for me", id='suggestion-3', color="secondary", className="suggestion-btn"),
+                dbc.Button("🔍 Find interesting correlations", id='suggestion-4', color="secondary", className="suggestion-btn"),
+            ]

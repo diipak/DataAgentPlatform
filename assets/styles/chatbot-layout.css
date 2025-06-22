@@ -197,23 +197,42 @@
 }
 
 .chat-input {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 1rem;
-    border-radius: 1.5rem;
-    font-size: 1rem;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    padding: 1rem !important;
+    border-radius: 1.5rem !important;
+    font-size: 1rem !important;
+}
+
+/* Override components.css conflicting styles for regular state */
+.app-container.dark-mode .chat-input,
+.app-container.dark-theme .chat-input {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
 }
 
 .chat-input::placeholder {
-    color: #bdc3c7;
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .chat-input:focus {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: #5dade2;
-    box-shadow: 0 0 0 0.2rem rgba(93, 173, 226, 0.25);
-    color: white;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: #5dade2 !important;
+    box-shadow: 0 0 0 0.2rem rgba(93, 173, 226, 0.25) !important;
+    color: white !important;
+    outline: none !important;
+}
+
+/* Override components.css conflicting styles */
+.app-container.dark-mode .chat-input:focus,
+.app-container.dark-theme .chat-input:focus {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: #5dade2 !important;
+    box-shadow: 0 0 0 0.2rem rgba(93, 173, 226, 0.25) !important;
+    color: white !important;
+    outline: none !important;
 }
 
 .send-button {
@@ -367,11 +386,14 @@ button[style*="position: fixed"],
     color: white !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .data-table-container tr:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
+.data-table-container tr:hover td {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
 /* Key Insights Section */
 .key-insights-section {
     background-color: rgba(255, 255, 255, 0.05);
@@ -585,6 +607,11 @@ button[style*="position: fixed"],
     background-color: transparent !important;
     color: white !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner table tr:hover td {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: white !important;
 }
 
 /* Charts */

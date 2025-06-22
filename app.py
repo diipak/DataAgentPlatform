@@ -25,17 +25,19 @@ app = dash.Dash(
 )
 
 # Include custom CSS files in the correct order
+import time
+cache_buster = str(int(time.time()))
 app.css.config.serve_locally = True
 app.css.append_css({
     'external_url': [
-        '/assets/styles/base.css',
-        '/assets/styles/utilities.css',
-        '/assets/styles/theme.css',
-        '/assets/styles/layout.css',
-        '/assets/styles/components.css',
-        '/assets/styles/visualizations.css',
-        '/assets/styles/chatbot-layout.css',
-        '/assets/styles/print.css'
+        f'/assets/styles/base.css?v={cache_buster}',
+        f'/assets/styles/utilities.css?v={cache_buster}',
+        f'/assets/styles/theme.css?v={cache_buster}',
+        f'/assets/styles/layout.css?v={cache_buster}',
+        f'/assets/styles/components.css?v={cache_buster}',
+        f'/assets/styles/visualizations.css?v={cache_buster}',
+        f'/assets/styles/chatbot-layout.css?v={cache_buster}',
+        f'/assets/styles/print.css?v={cache_buster}'
     ]
 })
 

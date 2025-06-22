@@ -40,7 +40,7 @@ def create_layout():
                 # Suggested Questions
                 html.Div(className="suggestions-container", children=[
                     html.P("🧠 Intelligent Analytics Questions:", className="suggestions-title"),
-                    html.Div(className="suggestion-buttons", children=[
+                    html.Div(id="suggestion-buttons-container", className="suggestion-buttons", children=[
                         dbc.Button("📊 Show me the main trends", id='suggestion-1', color="secondary", className="suggestion-btn"),
                         dbc.Button("📈 What are the key metrics?", id='suggestion-2', color="secondary", className="suggestion-btn"),
                         dbc.Button("🌍 Summarize the dataset for me", id='suggestion-3', color="secondary", className="suggestion-btn"),

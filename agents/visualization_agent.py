@@ -57,6 +57,25 @@ class VisualizationAgent(Agent):
                     logger.info(f"{self.name}: Attempting to generate a bar chart with x='{x_col_bar}', y='{y_col_bar}'.")
                     fig_bar = px.bar(data_df.head(20), x=x_col_bar, y=y_col_bar,
                                      title=f"Bar Chart: {y_col_bar} by {x_col_bar} (Top 20 rows)")
+                    fig_bar.update_layout(
+                        xaxis={'tickangle': -45},
+                        margin=dict(l=50, r=50, t=80, b=120),
+                        height=500,
+                        showlegend=False,
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='white'),
+                        xaxis_title=x_col_bar,
+                        yaxis_title=y_col_bar
+                    )
+                    fig_bar.update_layout(
+                        modebar=dict(
+                            bgcolor='rgba(0,0,0,0)',
+                            color='white',
+                            activecolor='#636EFA'
+                        )
+                    )
+                    fig_bar.update_traces(marker_color='#636EFA')
                     charts_json.append(pio.to_json(fig_bar))
                     insights_text += f"Generated a bar chart showing '{y_col_bar}' by '{x_col_bar}'.\n"
                 except Exception as e:
@@ -69,6 +88,23 @@ class VisualizationAgent(Agent):
                     hist_col = numeric_cols[0]
                     logger.info(f"{self.name}: Attempting to generate a histogram for '{hist_col}'.")
                     fig_hist = px.histogram(data_df, x=hist_col, title=f"Histogram for {hist_col}")
+                    fig_hist.update_layout(
+                        xaxis={'tickangle': -45},
+                        margin=dict(l=50, r=50, t=80, b=120),
+                        height=500,
+                        showlegend=False,
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='white'),
+                        xaxis_title=hist_col,
+                        yaxis_title="Count",
+                        modebar=dict(
+                            bgcolor='rgba(0,0,0,0)',
+                            color='white',
+                            activecolor='#EF553B'
+                        )
+                    )
+                    fig_hist.update_traces(marker_color='#EF553B')
                     charts_json.append(pio.to_json(fig_hist))
                     insights_text += f"Generated a histogram for '{hist_col}'.\n"
                 except Exception as e:
@@ -85,6 +121,23 @@ class VisualizationAgent(Agent):
                     sample_df = data_df.sample(n=min(1000, len(data_df)))
                     fig_scatter = px.scatter(sample_df, x=x_col_scatter, y=y_col_scatter,
                                              title=f"Scatter Plot: {y_col_scatter} vs {x_col_scatter} (sample)")
+                    fig_scatter.update_layout(
+                        xaxis={'tickangle': -45},
+                        margin=dict(l=50, r=50, t=80, b=120),
+                        height=500,
+                        showlegend=False,
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='white'),
+                        xaxis_title=x_col_scatter,
+                        yaxis_title=y_col_scatter,
+                        modebar=dict(
+                            bgcolor='rgba(0,0,0,0)',
+                            color='white',
+                            activecolor='#00CC96'
+                        )
+                    )
+                    fig_scatter.update_traces(marker=dict(color='#00CC96', size=8))
                     charts_json.append(pio.to_json(fig_scatter))
                     insights_text += f"Generated a scatter plot for '{y_col_scatter}' vs '{x_col_scatter}'.\n"
                 except Exception as e:

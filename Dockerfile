@@ -21,6 +21,7 @@ RUN pip install uv && uv pip install --system --no-cache-dir -r requirements.txt
 # Expose the port the app runs on
 EXPOSE 8050
 
-# Command to run the application
-# The $PORT environment variable will be used by Cloud Run.
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:server"]
+# Command to run the application. 
+# Using the shell form of CMD to allow for environment variable expansion.
+# The $PORT environment variable is automatically set by Cloud Run.
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 app:server

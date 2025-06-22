@@ -295,12 +295,16 @@
 .app-container.dark-mode .chat-input:focus {
     outline: none !important;
     border-color: var(--primary-color) !important;
-    box-shadow: 0 0 0 2px rgba(98, 198, 217, 0.3); /* Subtle focus glow */
+    box-shadow: 0 0 0 2px rgba(215, 219, 220, 0.3); /* Subtle focus glow */
+    color: var(--light-text) !important; 
+    background-color: var(--card-bg) !important;
 }
 .app-container.light-mode .chat-input:focus {
     outline: none !important;
     border-color: var(--light-primary-color) !important;
     box-shadow: 0 0 0 2px rgba(90, 155, 213, 0.3); /* Subtle focus glow */
+    color: var(--dark-text) !important;
+    background-color: var(--light-card-bg) !important;
 }
 
 /* Send Button Styling (using dbc class .send-button) */
