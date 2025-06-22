@@ -17,7 +17,9 @@ This project demonstrates an intelligent data analysis platform that leverages G
 
 ## System Architecture
 
-The platform utilizes a multi-agent system built with the Google Cloud Agent Development Kit (ADK). The key agents and their roles are:
+The platform utilizes a multi-agent system built with the Google Cloud Agent Development Kit (ADK). For a detailed visual representation of the system architecture, please see the [**Architecture Diagram**](./ARCHITECTURE.md).
+
+The key agents and their roles are:
 
 *   **SchemaAgent:** Connects to Google BigQuery to discover available datasets and tables. It retrieves and provides detailed schema information (column names, data types) for the user-selected dataset, which is crucial for contextual understanding.
 *   **DataAnalystAgent:** This agent is the core query processing unit. It receives a natural language query from the user and the comprehensive schema of the selected dataset (provided by the `SchemaAgent`). It then leverages a Large Language Model (LLM, e.g., Gemini) to translate the natural language query into an optimized BigQuery SQL query. After generating the SQL, it executes the query against the target dataset and returns the structured results.
@@ -161,7 +163,11 @@ This application is containerized and can be deployed to Google Cloud Run.
 6.  **Configure Docker:**
     `gcloud auth configure-docker YOUR_REGION-docker.pkg.dev` (e.g., `us-central1-docker.pkg.dev`)
 
-### Deployment Steps
+### Deploying Updates
+
+For instructions on how to deploy new changes to the existing Cloud Run service, please refer to the [**Deployment Guide**](./DEPLOYMENT_GUIDE.md).
+
+### Initial Deployment Steps
 
 1.  **Set Environment Variables (Shell):**
     Replace placeholders with your actual values.
