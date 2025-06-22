@@ -6,10 +6,10 @@ This diagram provides a visual overview of the Data Agent Platform's architectur
 graph TD
     subgraph "User Interface (Dash/Plotly)"
         direction LR
-        User([<fa:fa-user> User])
+        User([User])
         WebApp{Data Agent Platform UI}
 
-        User -- "1. Selects Dataset & Enters Natural Language Query" --> WebApp
+        User -- "1. Selects Dataset & Enters Query" --> WebApp
     end
 
     subgraph "Backend System (Python & Google ADK)"
@@ -19,16 +19,16 @@ graph TD
 
         subgraph "Coordinated Agents"
             direction LR
-            SchemaAgent["<fa:fa-database> SchemaAgent"]
-            DataAnalystAgent["<fa:fa-cogs> DataAnalystAgent"]
-            VisualizationAgent["<fa:fa-chart-bar> VisualizationAgent"]
+            SchemaAgent["SchemaAgent"]
+            DataAnalystAgent["DataAnalystAgent"]
+            VisualizationAgent["VisualizationAgent"]
         end
     end
 
     subgraph "Google Cloud Services"
         direction TB
-        BigQuery[("<fa:fa-google> Google BigQuery")]
-        VertexAI[("<fa:fa-google> Vertex AI<br/>(Gemini LLM)")]
+        BigQuery[('Google BigQuery')]
+        VertexAI[('Vertex AI / Gemini LLM')]
     end
 
     %% --- Data Flow ---
