@@ -1,78 +1,82 @@
-# System Architecture Diagram
+# System Architecture
 
-This diagram provides a visual overview of the Data Agent Platform's architecture, illustrating the flow of information from the user to the backend services and back.
+## Visual Overview
 
 ```mermaid
 graph TD
-    %% User Interface
-    User([User])
-    WebApp[Data Agent Platform UI]
+    %% Nodes
+    User[User]:::user
+    UI[Web Interface]:::ui
+    Orchestrator[Orchestrator]:::orchestrator
+    Schema[Schema Agent]:::agent
+    Analyst[Data Analyst Agent]:::agent
+    Visualizer[Visualization Agent]:::agent
+    BQ[BigQuery]:::gcp
+    AI[Vertex AI]:::gcp
     
-    %% Backend Components
-    Orchestrator[Orchestrator]
-    SchemaAgent[SchemaAgent]
-    DataAnalystAgent[DataAnalystAgent]
-    VisualizationAgent[VisualizationAgent]
+    %% Connections
+    User --> |1. Query| UI
+    UI --> |2. Request| Orchestrator
     
-    %% Cloud Services
-    BigQuery[Google BigQuery]
-    VertexAI[Vertex AI / Gemini LLM]
-
-    %% User Flow
-    User -->|1. Selects Dataset & Query| WebApp
-    WebApp -->|2. Triggers Workflow| Orchestrator
+    Orchestrator --> |3. Get Schema| Schema
+    Schema --> |4. Query| BQ
+    BQ --> |5. Return Schema| Schema
+    Schema --> |6. Schema| Analyst
     
-    %% Schema Flow
-    Orchestrator -->|3. Get Schema| SchemaAgent
-    SchemaAgent -->|4. Connect| BigQuery
-    BigQuery -->|5. Schema| SchemaAgent
-    SchemaAgent -->|6. Schema| DataAnalystAgent
-    
-    %% Query Processing
-    Orchestrator -->|7. Process Query| DataAnalystAgent
-    DataAnalystAgent -->|8. Generate SQL| VertexAI
-    VertexAI -->|9. SQL| DataAnalystAgent
-    DataAnalystAgent -->|10. Execute| BigQuery
-    BigQuery -->|11. Data| DataAnalystAgent
-    DataAnalystAgent -->|12. Forward Data| VisualizationAgent
-    
-    %% Visualization
-    VisualizationAgent -->|13. Charts & Insights| Orchestrator
-    Orchestrator -->|14. Render| WebApp
+    Orchestrator --> |7. Process Query| Analyst
+    Analyst --> |8. Generate SQL| AI
+    AI --> |9. SQL| Analyst
+    Analyst --> |10. Execute| BQ
+    BQ --> |11. Results| Analyst
+    Analyst --> |12. Data| Visualizer
+    Visualizer --> |13. Visuals| Orchestrator
+    Orchestrator --> |14. Display| UI
     
     %% Styling
     classDef user fill:#e3f2fd,stroke:#333,stroke-width:2px
-    classDef webapp fill:#fff9c4,stroke:#333,stroke-width:2px
+    classDef ui fill:#fff9c4,stroke:#333,stroke-width:2px
     classDef orchestrator fill:#f8bbd0,stroke:#333,stroke-width:2px
     classDef agent fill:#c8e6c9,stroke:#333,stroke-width:2px
     classDef gcp fill:#d1c4e9,stroke:#333,stroke-width:2px
-    
-    class User user
-    class WebApp webapp
-    class Orchestrator orchestrator
-    class SchemaAgent,DataAnalystAgent,VisualizationAgent agent
-    class BigQuery,VertexAI gcp
 ```
 
-## Architecture Flow Description
+## Architecture Flow
 
-1. **User Interaction**: The user selects a dataset and enters a natural language query through the web interface.
+### 1. User Interaction
+- User accesses the web interface
+- Selects a dataset and enters a natural language query
 
-2. **Orchestration**: The Dash web app triggers the workflow in the Orchestrator.
+### 2. Request Handling
+- Web interface sends the request to the Orchestrator
 
-3. **Schema Retrieval**: 
-   - The Orchestrator requests schema information from the SchemaAgent.
-   - SchemaAgent connects to Google BigQuery to fetch the dataset schema.
-   - The schema is provided to the DataAnalystAgent for context.
+### 3. Schema Retrieval
+- Orchestrator requests schema information from Schema Agent
+- Schema Agent queries BigQuery for the dataset structure
+- Schema is returned and passed to Data Analyst Agent
 
-4. **Query Processing**:
-   - The DataAnalystAgent uses Vertex AI (Gemini LLM) to convert the natural language query into SQL.
-   - The generated SQL is executed on Google BigQuery.
-   - Query results are returned to the DataAnalystAgent.
+### 4. Query Processing
+- Data Analyst Agent uses Vertex AI to convert natural language to SQL
+- SQL is executed on BigQuery
+- Query results are returned to the Data Analyst Agent
 
-5. **Visualization**:
-   - The DataAnalystAgent forwards the structured data to the VisualizationAgent.
-   - VisualizationAgent generates charts and insights from the data.
-   - Results are sent back through the Orchestrator to be displayed in the web interface.
+### 5. Visualization
+- Results are sent to Visualization Agent
+- Charts and insights are generated
+- Final output is returned to the web interface
 
-6. **Display**: The final output (tables, charts, and insights) is rendered in the user's browser.
+## Technical Components
+
+### Frontend
+- **Web Interface**: Built with Dash/Plotly for interactive visualizations
+
+### Backend Services
+- **Orchestrator**: Manages workflow between components
+- **Schema Agent**: Handles dataset metadata and structure
+- **Data Analyst Agent**: Processes natural language queries
+- **Visualization Agent**: Generates charts and insights
+
+### Cloud Services
+- **Google BigQuery**: Data storage and query execution
+- **Vertex AI**: Natural language processing and SQL generation
+
+This architecture ensures a smooth flow from user query to data visualization while maintaining clear separation of concerns between components.
