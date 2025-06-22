@@ -19,15 +19,16 @@ flowchart TD
     BigQuery --> VisualizationAgent[Visualization Agent<br/>Chart Generation]
     VisualizationAgent --> VisualizationPanel
     
-    style User fill:#e3f2fd
-    style WebUI fill:#fff9c4
-    style ChatPanel fill:#f1f8e9
-    style VisualizationPanel fill:#f1f8e9
-    style DataAnalyst fill:#c8e6c9
-    style SchemaAgent fill:#c8e6c9
-    style VisualizationAgent fill:#c8e6c9
-    style VertexAI fill:#d1c4e9
-    style BigQuery fill:#d1c4e9
+    %% Styling with improved text contrast
+    style User fill:#e3f2fd,color:#000,stroke:#333,stroke-width:2px
+    style WebUI fill:#fff9c4,color:#000,stroke:#333,stroke-width:2px
+    style ChatPanel fill:#f1f8e9,color:#000,stroke:#333,stroke-width:1.5px
+    style VisualizationPanel fill:#f1f8e9,color:#000,stroke:#333,stroke-width:1.5px
+    style DataAnalyst fill:#c8e6c9,color:#000,stroke:#2e7d32,stroke-width:1.5px
+    style SchemaAgent fill:#c8e6c9,color:#000,stroke:#2e7d32,stroke-width:1.5px
+    style VisualizationAgent fill:#c8e6c9,color:#000,stroke:#2e7d32,stroke-width:1.5px
+    style VertexAI fill:#d1c4e9,color:#000,stroke:#5e35b1,stroke-width:1.5px
+    style BigQuery fill:#d1c4e9,color:#000,stroke:#5e35b1,stroke-width:1.5px
 ```
 
 ## Architecture Flow
